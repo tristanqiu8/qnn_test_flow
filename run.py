@@ -83,9 +83,8 @@ def test(args):
                 os.environ['MODEL_DIR'] = model_dir
                 os.environ['MODEL_NAME'] = model_name
                 # os.environ['QAUNT_MODEL_NAME'] = model_lib_fname
-                import pdb; pdb.set_trace()
+                # import pdb; pdb.set_trace()
                 os.system("bash run_single_model.sh")
-                import pdb; pdb.set_trace()
 
 
 def main():

@@ -22,5 +22,5 @@ adb shell ADSP_LIBRARY_PATH=/data/local/tmp/model \
           /data/local/tmp/model/qnn-sample-app \
           --backend libQnnHtp.so --model  lib${MODEL_NAME}.so \
           --input_list /data/local/tmp/model/${MODEL_NAME}_input_list.txt \
-          --output_dir /data/local/tmp/model/output > log_${MODEL_NAME}.txt
+          --output_dir /data/local/tmp/model/output > ${MODEL_DIR}/log_${MODEL_NAME}.txt
 
