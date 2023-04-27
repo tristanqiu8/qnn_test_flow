@@ -1,0 +1,346 @@
+     0.0ms [  INFO ] Model: 
+     0.1ms [  INFO ] Backend: /data/local/tmp/model/libQnnHtp.so
+     1.2ms [  INFO ] Model wasn't loaded from a shared library.
+     1.8ms [  INFO ] qnn-sample-app build version: v2.8.0.230223123141_52150
+     1.8ms [  INFO ] Backend        build version: v2.8.0.230223123141_52150
+     2.2ms [  INFO ] Initializing logging in the backend. Callback: [0x571b3b3728], Log Level: [3]
+     0.0ms [  INFO ]  <I> Qnn log initialized
+
+     0.0ms [  INFO ]  <I> addClient done (1). status 0x0
+
+     0.0ms [  INFO ]  <I> addClient started.
+
+     0.0ms [  INFO ]  <I> addClient done (1). status = 0x0
+
+     2.7ms [  INFO ] Initialize Backend Returned Status = 0
+     0.0ms [  INFO ]  <I> QnnDevice_create started. device = 0x1
+
+     0.0ms [  INFO ]  <I> exit with 0
+
+     0.0ms [  INFO ]  <I> exit with 0
+
+     0.0ms [  INFO ]  <I> exit with 0
+
+     0.0ms [  INFO ]  <I> exit with 0
+
+     0.0ms [  INFO ]  <I> exits with 2, successfully initialized rpc memory
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 8 isInit 1
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 136 isInit 1
+
+     0.0ms [  INFO ]  <I> setSkelLogLevelInternal return 0
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 56 isInit 1
+
+     0.0ms [  INFO ]  <I> DmaHandleMod 2 fd 56 va 0xfdffc000
+
+     0.0ms [  INFO ]  <I> dmahandleMod Latency 1709
+
+     0.0ms [  INFO ]  <I> QnnDevice_create done. status 0x0
+
+     0.0ms [  INFO ]  <I> QnnContext_createFromBinary started, context = 0x8aa01b38
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 1382584 isInit 1
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 36440 isInit 1
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 2000 isInit 1
+
+     0.0ms [  INFO ]  <I> RPC Memory allocated for graph hg307_480x480_img_pet_quant with In 0x7a91eae000 [1518b8 B], Inouts 0x7db3002000 [7d0 B], Outs 0x7db1cd0000 [8e58 B]
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 28 isInit 1
+
+     0.0ms [  INFO ]  <I> DmaHandleMod 2 fd 1382584 va 0x22a00000
+
+     0.0ms [  INFO ]  <I> dmahandleMod Latency 1318
+
+     0.0ms [  INFO ]  <I> DmaHandleMod 2 fd 2000 va 0x201f4000
+
+     0.0ms [  INFO ]  <I> dmahandleMod Latency 1313
+
+     0.0ms [  INFO ]  <I> DmaHandleMod 2 fd 36440 va 0x2093c000
+
+     0.0ms [  INFO ]  <I> dmahandleMod Latency 1386
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 8186056 isInit 1
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 32 isInit 1
+
+     0.0ms [  INFO ]  <I> QnnContext_setConfig context 1 
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 48 isInit 1
+
+     0.0ms [  INFO ]  <I> QnnContext_setConfig done. status 0x0
+
+     0.0ms [  INFO ]  <I> QnnContext_createFromBinary done. status 0x0
+
+     0.0ms [  INFO ]  <I> QnnGraph_retrieve started. context = 0x1
+
+     0.0ms [  INFO ]  <I> QnnGraph_retrieve context 1 graph hg307_480x480_img_pet_quant
+
+     0.0ms [  INFO ]  <I> QnnGraph_retrieve done. found graph hg307_480x480_img_pet_quant.
+
+     0.0ms [  INFO ]  <I> QnnDevice_getInfrastructure started
+
+     0.0ms [  INFO ]  <I> QnnDevice_getInfrastructure done successfully
+
+power 16 
+coreVoltageCornerTarget 160 
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2251 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 1974 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 1933 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 1957 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2176 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2121 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2159 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2103 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2105 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2091 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2099 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2095 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2121 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2621 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2601 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2616 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2595 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2897 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2717 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2696 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2683 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 3360 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2741 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2728 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 3026 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2734 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2723 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2720 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2735 us
+     0.0ms [  INFO ]  <I> QnnGraph_execute started. graph = 0x1
+
+     0.0ms [  INFO ]  <I> Graph hg307_480x480_img_pet_quant execution finished with result 0
+
+     0.0ms [  INFO ]  <I> QnnGraph_execute done. status 0x0
+
+QNN_graphExecute: 2740 us
+QNN_graphExecute_aver: 2473 us
+   307.6ms [  INFO ] cleaning up resources for input tensors
+   307.9ms [  INFO ] cleaning up resources for output tensors
+     0.0ms [  INFO ]  <I> QnnContext_free started. contextId 1 
+
+     0.0ms [  INFO ]  <I> DmaHandleMod destroy len 1382584, va 0x22a00000
+
+     0.0ms [  INFO ]  <I> dmahandleMod Latency 855
+
+     0.0ms [  INFO ]  <I> DmaHandleMod destroy len 2000, va 0x201f4000
+
+     0.0ms [  INFO ]  <I> dmahandleMod Latency 615
+
+     0.0ms [  INFO ]  <I> DmaHandleMod destroy len 36440, va 0x2093c000
+
+     0.0ms [  INFO ]  <I> dmahandleMod Latency 587
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 40 isInit 1
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 40 isInit 1
+
+     0.0ms [  INFO ]  <I> QnnDevice_getInfo started. device = 0x1
+
+     0.0ms [  INFO ]  <I> QnnDevice_getInfo done. status 0x0
+
+     0.0ms [  INFO ]  <I> QnnContext_free done. status 0x0
+
+     0.0ms [  INFO ]  <I> QnnDevice_free started. device = 0x1
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 8 isInit 1
+
+     0.0ms [  INFO ]  <I> Exiting thread
+
+     0.0ms [  INFO ]  <I> rpcMemoryAlloc 16 isInit 1
+
+     0.0ms [  INFO ]  <I> exits with 4, successfully deinitialized rpc memory
+
+     0.0ms [  INFO ]  <I> QnnDevice_free done. status 0x0
+
+     0.0ms [  INFO ]  <I> terminateClient started. 0x1
+
+     0.0ms [  INFO ]  <I> terminateClient done. status 0x0
+
+     0.0ms [  INFO ]  <I> terminateClient started. logger = 0x1
+
+     0.0ms [  INFO ]  <I> Qnn log terminated
+
