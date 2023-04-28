@@ -85,13 +85,15 @@ def test(args):
                 
                 # step 4: push to the pdb
                 # os.environ['MODEL_LIB'] = lib_dir
-                os.environ['MODEL_DIR'] = model_dir
-                os.environ['MODEL_NAME'] = model_name
-                # lib_dir = os.path.join(model_dir, "aarch64-android")
-                # model_lib_path = os.path.join(lib_dir, model_lib_fname)
-                # assert os.path.exists(model_lib_path)
-                # import pdb; pdb.set_trace()
-                os.system("bash run_perf.sh")
+                if args.mode == "max": 
+                    os.environ['MODEL_DIR'] = model_dir
+                    os.environ['MODEL_NAME'] = model_name
+                    # import pdb; pdb.set_trace()
+                    os.system("bash run_max.sh")
+                elif args.mode == "turbo":
+                    os.environ['MODEL_DIR'] = model_dir
+                    os.environ['MODEL_NAME'] = model_name
+                    os.system("bash run_turbo.sh")
                 # import pdb; pdb.set_trace()
 
 
