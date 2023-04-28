@@ -14,12 +14,12 @@ adb push ${MODEL_DIR}/${MODEL_NAME}_input_list.txt /data/local/tmp/model/.
 adb push ${MODEL_DIR}/ctx_${MODEL_NAME}.bin /data/local/tmp/model/.
 #model and data:
 # adb push $MODEL_LIB/. /data/local/tmp/model/.
-adb shell chmod  777 /data/local/tmp/model/qnn-perf-app
-adb shell chmod  777 /data/local/tmp/model/qnn-net-run
+adb shell chmod  777 /data/local/tmp/model/qnn-turboplus-run
+# adb shell chmod  777 /data/local/tmp/model/qnn-net-run
 
 adb shell ADSP_LIBRARY_PATH=/data/local/tmp/model \
           LD_LIBRARY_PATH=/data/local/tmp/model \
-          /data/local/tmp/model/qnn-perf-app \
+          /data/local/tmp/model/qnn-turboplus-run \
           --backend /data/local/tmp/model/libQnnHtp.so \
           --retrieve_context  /data/local/tmp/model/ctx_${MODEL_NAME}.bin \
           --input_list /data/local/tmp/model/${MODEL_NAME}_input_list.txt \

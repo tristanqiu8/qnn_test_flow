@@ -1,3 +1,4 @@
 .vscode/
-test_dump/
+*test_dump/
+dump*/
 *.code-workspace

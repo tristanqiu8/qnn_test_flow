@@ -90,11 +90,13 @@ def test(args):
                     os.environ['MODEL_NAME'] = model_name
                     # import pdb; pdb.set_trace()
                     os.system("bash run_max.sh")
-                elif args.mode == "turbo":
+                elif args.mode == "turbo-plus":
                     os.environ['MODEL_DIR'] = model_dir
                     os.environ['MODEL_NAME'] = model_name
-                    os.system("bash run_turbo.sh")
+                    os.system("bash run_turbo_plus.sh")
                 # import pdb; pdb.set_trace()
+                else:
+                    raise Exception
 
 
 def main():
