@@ -85,25 +85,20 @@ def test(args):
                 
                 # step 4: push to the pdb
                 # os.environ['MODEL_LIB'] = lib_dir
-                if args.mode == "max": 
-                    os.environ['MODEL_DIR'] = model_dir
-                    os.environ['MODEL_NAME'] = model_name
-                    # import pdb; pdb.set_trace()
-                    os.system("bash run_max.sh")
-                elif args.mode == "turbo-plus":
-                    os.environ['MODEL_DIR'] = model_dir
-                    os.environ['MODEL_NAME'] = model_name
-                    os.system("bash run_turbo_plus.sh")
+                os.environ['MODEL_DIR'] = model_dir
+                os.environ['MODEL_NAME'] = model_name
+                os.environ['QNN_APP'] = args.call
                 # import pdb; pdb.set_trace()
-                else:
-                    raise Exception
+                os.system("bash run_single_adb.sh")
+                # import pdb; pdb.set_trace()
 
 
 def main():
     parser = ap.ArgumentParser()
     parser.add_argument("--in_dir", help='target test case dir (Caffe)', required=True)
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
-    parser.add_argument("--mode", help="test run mode", default="normal")
+    parser.add_argument("--call", help="test run mode", default="normal")
+    parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     args = parser.parse_args()
     init()
     test(args)
