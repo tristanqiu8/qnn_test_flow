@@ -29,6 +29,6 @@ adb shell  ADSP_LIBRARY_PATH=/data/local/tmp/model \
            /data/local/tmp/model/qnn-net-run --backend /data/local/tmp/model/libQnnHtp.so \
            --retrieve_context /data/local/tmp/model/$QAUNT_MODEL_NAME \
             --input_list /data/local/tmp/model/input.txt \
-            --output_dir   /data/local/tmp/model/output  --profiling_level detailed --log_level
+            --output_dir   /data/local/tmp/model/output  \
+            --profiling_level detailed --log_level verbose
 adb pull /data/local/tmp/model/output/. res/$QAUNT_MODEL_NAME.so/.
-

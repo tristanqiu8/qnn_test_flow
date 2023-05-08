@@ -1,5 +1,6 @@
 import os, shutil
 import argparse as ap
+import json
 import numpy as np
 import onnxruntime as ort
 from onnxruntime.datasets import get_example
@@ -16,6 +17,11 @@ def test(args):
     else:
         shutil.rmtree(args.out_dir)
         os.mkdir(args.out_dir)
+    
+    with open('./conf/HtpConfigFile.json', 'r') as load_f:
+        default_cfg_dict =json.load(load_f)
+    load_f.close()
+
     for root, dirnames, filenames in os.walk(args.in_dir):
         for filename in filenames:
             if filename.endswith("prototxt"):
@@ -70,17 +76,40 @@ def test(args):
                 # stage 2: clang and generate .so
                 model_bin_path  = os.path.abspath(os.path.join(model_dir, bin_fname))
                 # import pdb; pdb.set_trace()
-                # cmd = "qnn-model-lib-generator -c " + cpp_path + " -b " +  model_bin_path + " -o" + model_dir
-                os.system("qnn-model-lib-generator -c " + cpp_path +
-                          " -b " +  model_bin_path + " -o" + model_dir)
+                os.system("qnn-model-lib-generator -c " + cpp_path + " -b " +  model_bin_path + " -o " + model_dir)
                 # stage 3: serialized
                 model_lib_fname = "lib" + model_name + ".so"
                 binary_fname = "ctx_" + model_name
                 lib_dir = os.path.join(model_dir, "x86_64-linux-clang")
                 so_path = os.path.abspath(os.path.join(lib_dir, model_lib_fname))
+                # os.system("cp ./conf/HtpConfigFile.json " + model_dir)
+
+                with open("./conf/PerfSetting_sample.conf", 'r') as load_f:
+                    perf_conf_dict = json.load(load_f)
+                load_f.close()
+                perf_conf_dict['graphs']['graph_names'] = [model_name]
+                perf_conf_dict['graphs']['vtcm_mb'] = args.sram
+                PerfSetting_Conf_fpath = os.path.abspath(os.path.join(model_dir, "PerfSetting.conf"))
+                with open(PerfSetting_Conf_fpath, 'w') as dump_f:
+                    json.dump(perf_conf_dict, dump_f, indent=4, ensure_ascii=False)
+                dump_f.close()
+                cfg_dict = default_cfg_dict
+                cfg_dict['backend_extensions']['config_file_path'] = PerfSetting_Conf_fpath
+                HtpConfigFile_path = PerfSetting_Conf_fpath = os.path.abspath(os.path.join(model_dir, "HtpConfigFile.json"))
+                with open(HtpConfigFile_path, 'w') as dump_f:
+                    json.dump(cfg_dict, dump_f, indent=4, ensure_ascii=False)
+                dump_f.close()
+                # if args.sram != 8:
+                #     os.system("qnn-context-binary-generator -backend $QNN_SDK_ROOT/target/x86_64-linux-clang/lib/libQnnHtp.so --model "
+                #             + so_path + " --binary_file " + binary_fname + " --log_level verbose --output_dir " +
+                #             model_dir + " --config_file " + HtpConfigFile_path)
+                # else:
+                #     os.system("qnn-context-binary-generator -backend $QNN_SDK_ROOT/target/x86_64-linux-clang/lib/libQnnHtp.so --model "
+                #             + so_path + " --binary_file " + binary_fname + " --log_level verbose --output_dir " +
+                #             model_dir)
                 os.system("qnn-context-binary-generator -backend $QNN_SDK_ROOT/target/x86_64-linux-clang/lib/libQnnHtp.so --model "
-                          + so_path + " --binary_file " + binary_fname + " --log_level verbose --output_dir " +
-                          model_dir)
+                            + so_path + " --binary_file " + binary_fname + " --log_level verbose --output_dir " +
+                            model_dir)
                 # import pdb; pdb.set_trace()
                 
                 # step 4: push to the pdb
@@ -99,6 +128,7 @@ def main():
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
     parser.add_argument("--call", help="test run mode", default="normal")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
+    parser.add_argument("--sram", help="sram size, unit MB, up to 8", default=8)
     args = parser.parse_args()
     init()
     test(args)
