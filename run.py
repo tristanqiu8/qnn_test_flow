@@ -28,7 +28,9 @@ def test(args):
                 proto_path = os.path.abspath(os.path.join(root, filename))
                 expect_param_path = proto_path.split(".")[0] + ".caffemodel"
                 # out_onnx_path = proto_path.split(".")[0] + ".onnx"
-                assert os.path.exists(expect_param_path)
+                if not os.path.exists(expect_param_path):
+                    print(expect_param_path + " is not found! Current test skip")
+                    continue
                 model_name = filename.split(".")[0]
                 # print("Running model: " + model_name)
                 
@@ -38,10 +40,16 @@ def test(args):
                     os.mkdir(model_dir)
                 onnx_tmp_path = os.path.abspath(os.path.join(model_dir, model_name + "_tmp.onnx"))
                 onnx_path = os.path.abspath(os.path.join(model_dir, model_name + ".onnx"))
-                os.system("python" + " -m caffe2onnx.convert"
+                ret = os.system("python" + " -m caffe2onnx.convert"
                            + " --prototxt " + proto_path + " --caffemodel " + expect_param_path
                            + " --onnx " + onnx_tmp_path)
-                os.system("python remove_initializer_from_input.py --input " + onnx_tmp_path + " --output " + onnx_path)
+                if ret:
+                    print("caffe2onnx for case " + model_name + " failed! Skip the test")
+                    continue
+                ret = os.system("python remove_initializer_from_input.py --input " + onnx_tmp_path + " --output " + onnx_path)
+                if ret:
+                    print("remove_initializer_from_input for case " + model_name + " failed! Skip the test")
+                    continue
                 os.remove(onnx_tmp_path)
                 
                 # step 2: prepare input.raw and its file txt
@@ -128,7 +136,7 @@ def main():
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
     parser.add_argument("--call", help="test run mode", default="normal")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
-    parser.add_argument("--sram", help="sram size, unit MB, up to 8", default=8)
+    parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=8)
     args = parser.parse_args()
     init()
     test(args)

@@ -27,4 +27,4 @@ adb shell  ADSP_LIBRARY_PATH=/data/local/tmp/model \
            --profiling_level=backend \
            --config_file=/data/local/tmp/model/HtpConfigFile.json \
            --log_level verbose \
-            --output_dir /data/local/tmp/model/output
+           --output_dir /data/local/tmp/model/output

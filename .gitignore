@@ -1,3 +1,6 @@
 .vscode/
 *dump*/
+test*/
+*log*
 *.code-workspace
+*.zip
