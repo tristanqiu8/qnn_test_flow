@@ -107,18 +107,14 @@ def test(args):
                 with open(HtpConfigFile_path, 'w') as dump_f:
                     json.dump(cfg_dict, dump_f, indent=4, ensure_ascii=False)
                 dump_f.close()
-                # if args.sram != 8:
-                #     os.system("qnn-context-binary-generator -backend $QNN_SDK_ROOT/target/x86_64-linux-clang/lib/libQnnHtp.so --model "
-                #             + so_path + " --binary_file " + binary_fname + " --log_level verbose --output_dir " +
-                #             model_dir + " --config_file " + HtpConfigFile_path)
-                # else:
-                #     os.system("qnn-context-binary-generator -backend $QNN_SDK_ROOT/target/x86_64-linux-clang/lib/libQnnHtp.so --model "
-                #             + so_path + " --binary_file " + binary_fname + " --log_level verbose --output_dir " +
-                #             model_dir)
-                os.system("qnn-context-binary-generator -backend $QNN_SDK_ROOT/target/x86_64-linux-clang/lib/libQnnHtp.so --model "
+                if args.sram:
+                    os.system("qnn-context-binary-generator -backend $QNN_SDK_ROOT/target/x86_64-linux-clang/lib/libQnnHtp.so --model "
+                            + so_path + " --binary_file " + binary_fname + " --log_level verbose --output_dir " +
+                            model_dir + " --config_file " + HtpConfigFile_path)
+                else:
+                    os.system("qnn-context-binary-generator -backend $QNN_SDK_ROOT/target/x86_64-linux-clang/lib/libQnnHtp.so --model "
                             + so_path + " --binary_file " + binary_fname + " --log_level verbose --output_dir " +
                             model_dir)
-                # import pdb; pdb.set_trace()
                 
                 # step 4: push to the pdb
                 # os.environ['MODEL_LIB'] = lib_dir
@@ -134,9 +130,9 @@ def main():
     parser = ap.ArgumentParser()
     parser.add_argument("--in_dir", help='target test case dir (Caffe)', required=True)
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
-    parser.add_argument("--call", help="test run mode", default="normal")
+    parser.add_argument("--call", help="test run mode", default="qnn-max100-app")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
-    parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=8)
+    parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
     args = parser.parse_args()
     init()
     test(args)
