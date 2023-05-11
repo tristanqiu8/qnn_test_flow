@@ -103,8 +103,13 @@ def test(args):
                 dump_f.close()
                 cfg_dict = default_cfg_dict
                 cfg_dict['backend_extensions']['config_file_path'] = PerfSetting_Conf_fpath
-                HtpConfigFile_path = PerfSetting_Conf_fpath = os.path.abspath(os.path.join(model_dir, "HtpConfigFile.json"))
+                HtpConfigFile_path = os.path.abspath(os.path.join(model_dir, "HtpConfigFile.json"))
                 with open(HtpConfigFile_path, 'w') as dump_f:
+                    json.dump(cfg_dict, dump_f, indent=4, ensure_ascii=False)
+                dump_f.close()
+                cfg_dict['backend_extensions']['config_file_path'] = "/data/local/tmp/model/PerfSetting.conf"
+                HtpConfigFile_local_path = os.path.abspath(os.path.join(model_dir, "HtpConfigFile_local.json"))
+                with open(HtpConfigFile_local_path, 'w') as dump_f:
                     json.dump(cfg_dict, dump_f, indent=4, ensure_ascii=False)
                 dump_f.close()
                 if args.sram:
@@ -120,9 +125,13 @@ def test(args):
                 # os.environ['MODEL_LIB'] = lib_dir
                 os.environ['MODEL_DIR'] = model_dir
                 os.environ['MODEL_NAME'] = model_name
-                os.environ['QNN_APP'] = args.call
-                # import pdb; pdb.set_trace()
+                os.environ['QNN_APP'] = args.app
                 os.system("bash run_single_adb.sh")
+                # parse the detailed result
+                log_path = os.path.abspath(os.path.join(model_dir, "output_detailed/qnn-profiling-data_0.log"))
+                parse_txt_path = os.path.abspath(os.path.join(model_dir, "qnn-profiling.txt"))
+                os.system("./lib/x86_64-linux/bin/qnn-profile-viewer --input_log=" + log_path +
+                           " --reader=./lib/x86_64-linux/lib/libQnnHtpProfilingReader.so > " + parse_txt_path)
                 # import pdb; pdb.set_trace()
 
 
@@ -130,7 +139,7 @@ def main():
     parser = ap.ArgumentParser()
     parser.add_argument("--in_dir", help='target test case dir (Caffe)', required=True)
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
-    parser.add_argument("--call", help="test run mode", default="qnn-max100-app")
+    parser.add_argument("--app", help="test run app", default="qnn-max100-app")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
     args = parser.parse_args()
