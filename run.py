@@ -24,6 +24,7 @@ def test(args):
 
     for root, dirnames, filenames in os.walk(args.in_dir):
         for filename in filenames:
+            model_found = False
             if filename.endswith("prototxt"):
                 proto_path = os.path.abspath(os.path.join(root, filename))
                 expect_param_path = proto_path.split(".")[0] + ".caffemodel"
@@ -51,7 +52,25 @@ def test(args):
                     print("remove_initializer_from_input for case " + model_name + " failed! Skip the test")
                     continue
                 os.remove(onnx_tmp_path)
+                model_found = True
                 
+            if filename.endswith("onnx"):
+                model_name = filename.split(".")[0]
+                model_path = os.path.abspath(os.path.join(root, filename))
+                model_dir = os.path.abspath(os.path.join(args.out_dir, model_name))
+                encoding_name = model_name + ".encodings"
+                encoding_path = os.path.abspath(os.path.join(root, encoding_name))
+                if not os.path.exists(model_dir):
+                    os.mkdir(model_dir)
+                onnx_path = os.path.abspath(os.path.join(model_dir, model_name + ".onnx"))
+                os.system("cp " + model_path + " " + onnx_path)
+                model_found = True
+                if os.path.exists(encoding_path):
+                    encoding_found = True
+                else:
+                    encoding_found = False
+                
+            if model_found:
                 # step 2: prepare input.raw and its file txt
                 example = get_example(onnx_path)
                 sess = ort.InferenceSession(example, providers=ort.get_available_providers())
@@ -79,8 +98,13 @@ def test(args):
                 bin_fname = model_name + ".bin"
                 cpp_path = os.path.abspath(os.path.join(model_dir, cpp_fname))
                 os.system("bash $QNN_SDK_ROOT/target/x86_64-linux-clang/bin/envsetup.sh")
-                os.system("qnn-onnx-converter --input_network " + onnx_path + " --output_path " 
-                          + cpp_path + " --input_list " + pc_input_list_path)
+                if encoding_found:
+                    os.system("qnn-onnx-converter --input_network " + onnx_path + " --output_path " 
+                                + cpp_path + " --input_list " + pc_input_list_path +
+                                " --quantization_overrides " + encoding_path)
+                else:
+                    os.system("qnn-onnx-converter --input_network " + onnx_path + " --output_path " 
+                                + cpp_path + " --input_list " + pc_input_list_path)
                 # stage 2: clang and generate .so
                 model_bin_path  = os.path.abspath(os.path.join(model_dir, bin_fname))
                 # import pdb; pdb.set_trace()
@@ -131,7 +155,7 @@ def test(args):
                 log_path = os.path.abspath(os.path.join(model_dir, "output_detailed/qnn-profiling-data_0.log"))
                 parse_txt_path = os.path.abspath(os.path.join(model_dir, "qnn-profiling.txt"))
                 os.system("./lib/x86_64-linux/bin/qnn-profile-viewer --input_log=" + log_path +
-                           " --reader=./lib/x86_64-linux/lib/libQnnHtpProfilingReader.so > " + parse_txt_path)
+                            " --reader=./lib/x86_64-linux/lib/libQnnHtpProfilingReader.so > " + parse_txt_path)
                 # import pdb; pdb.set_trace()
 
 
