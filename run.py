@@ -97,14 +97,14 @@ def test(args):
                 cpp_fname = model_name + ".cpp"
                 bin_fname = model_name + ".bin"
                 cpp_path = os.path.abspath(os.path.join(model_dir, cpp_fname))
-                os.system("bash $QNN_SDK_ROOT/target/x86_64-linux-clang/bin/envsetup.sh")
+                os.system("source $QNN_SDK_ROOT/target/x86_64-linux-clang/bin/envsetup.sh")
                 if encoding_found:
                     os.system("qnn-onnx-converter --input_network " + onnx_path + " --output_path " 
                                 + cpp_path + " --input_list " + pc_input_list_path +
-                                " --quantization_overrides " + encoding_path)
+                                " --quantization_overrides " + encoding_path + " --arch_checker")
                 else:
                     os.system("qnn-onnx-converter --input_network " + onnx_path + " --output_path " 
-                                + cpp_path + " --input_list " + pc_input_list_path)
+                                + cpp_path + " --input_list " + pc_input_list_path + " --arch_checker")
                 # stage 2: clang and generate .so
                 model_bin_path  = os.path.abspath(os.path.join(model_dir, bin_fname))
                 # import pdb; pdb.set_trace()
@@ -154,7 +154,9 @@ def test(args):
                 # parse the detailed result
                 log_path = os.path.abspath(os.path.join(model_dir, "output_detailed/qnn-profiling-data_0.log"))
                 parse_txt_path = os.path.abspath(os.path.join(model_dir, "qnn-profiling.txt"))
+                parse_csv_path = os.path.abspath(os.path.join(model_dir, "qnn-profiling.csv"))
                 os.system("./lib/x86_64-linux/bin/qnn-profile-viewer --input_log=" + log_path +
+                            " --output=" + parse_csv_path +
                             " --reader=./lib/x86_64-linux/lib/libQnnHtpProfilingReader.so > " + parse_txt_path)
                 # import pdb; pdb.set_trace()
 
