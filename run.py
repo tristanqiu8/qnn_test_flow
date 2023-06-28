@@ -26,6 +26,7 @@ def test(args):
         for filename in filenames:
             model_found = False
             if filename.endswith("prototxt"):
+                encoding_found = False
                 proto_path = os.path.abspath(os.path.join(root, filename))
                 expect_param_path = proto_path.split(".")[0] + ".caffemodel"
                 # out_onnx_path = proto_path.split(".")[0] + ".onnx"
