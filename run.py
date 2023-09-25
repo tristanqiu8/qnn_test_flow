@@ -6,9 +6,9 @@ import onnxruntime as ort
 from onnxruntime.datasets import get_example
 
 
-def init():  # step 0: initialize a qnn sdk environment
-    # QNN_SDK_ROOT is preset in ~/.bashrc
-    os.system("source $QNN_SDK_ROOT/init.sh")
+# def init():  # step 0: initialize a qnn sdk environment
+#     # QNN_SDK_ROOT is preset in ~/.bashrc
+#     os.system("source $QNN_SDK_ROOT/init.sh")
 
 
 def test(args):
@@ -42,13 +42,14 @@ def test(args):
                     os.mkdir(model_dir)
                 onnx_tmp_path = os.path.abspath(os.path.join(model_dir, model_name + "_tmp.onnx"))
                 onnx_path = os.path.abspath(os.path.join(model_dir, model_name + ".onnx"))
-                ret = os.system("python" + " -m caffe2onnx.convert"
+                ret = os.system("/home/tritan/anaconda3/envs/qnn/bin/python" + " -m caffe2onnx.convert"
                            + " --prototxt " + proto_path + " --caffemodel " + expect_param_path
                            + " --onnx " + onnx_tmp_path)
                 if ret:
                     print("caffe2onnx for case " + model_name + " failed! Skip the test")
                     continue
-                ret = os.system("python remove_initializer_from_input.py --input " + onnx_tmp_path + " --output " + onnx_path)
+                ret = os.system("/home/tritan/anaconda3/envs/qnn/bin/python remove_initializer_from_input.py --input "
+                                + onnx_tmp_path + " --output " + onnx_path)
                 if ret:
                     print("remove_initializer_from_input for case " + model_name + " failed! Skip the test")
                     continue
@@ -98,7 +99,7 @@ def test(args):
                 cpp_fname = model_name + ".cpp"
                 bin_fname = model_name + ".bin"
                 cpp_path = os.path.abspath(os.path.join(model_dir, cpp_fname))
-                os.system("source $QNN_SDK_ROOT/target/x86_64-linux-clang/bin/envsetup.sh")
+                # os.system("source $QNN_SDK_ROOT/target/x86_64-linux-clang/bin/envsetup.sh")
                 if encoding_found:
                     os.system("qnn-onnx-converter --input_network " + onnx_path + " --output_path " 
                                 + cpp_path + " --input_list " + pc_input_list_path +
@@ -138,13 +139,14 @@ def test(args):
                     json.dump(cfg_dict, dump_f, indent=4, ensure_ascii=False)
                 dump_f.close()
                 if args.sram:
-                    os.system("qnn-context-binary-generator -backend $QNN_SDK_ROOT/target/x86_64-linux-clang/lib/libQnnHtp.so --model "
+                    os.system("qnn-context-binary-generator --backend $QNN_SDK_ROOT/lib/x86_64-linux-clang/libQnnHtp.so --model "
                             + so_path + " --binary_file " + binary_fname + " --log_level verbose --output_dir " +
                             model_dir + " --config_file " + HtpConfigFile_path)
                 else:
-                    os.system("qnn-context-binary-generator -backend $QNN_SDK_ROOT/target/x86_64-linux-clang/lib/libQnnHtp.so --model "
+                    os.system("qnn-context-binary-generator --backend $QNN_SDK_ROOT/lib/x86_64-linux-clang/libQnnHtp.so --model "
                             + so_path + " --binary_file " + binary_fname + " --log_level verbose --output_dir " +
                             model_dir)
+                    # import pdb; pdb.set_trace()
                 
                 # step 4: push to the pdb
                 # os.environ['MODEL_LIB'] = lib_dir
@@ -156,9 +158,9 @@ def test(args):
                 log_path = os.path.abspath(os.path.join(model_dir, "output_detailed/qnn-profiling-data_0.log"))
                 parse_txt_path = os.path.abspath(os.path.join(model_dir, "qnn-profiling.txt"))
                 parse_csv_path = os.path.abspath(os.path.join(model_dir, "qnn-profiling.csv"))
-                os.system("./lib/x86_64-linux/bin/qnn-profile-viewer --input_log=" + log_path +
+                os.system("./lib/x86_64-linux-clang/qnn-profile-viewer --input_log=" + log_path +
                             " --output=" + parse_csv_path +
-                            " --reader=./lib/x86_64-linux/lib/libQnnHtpProfilingReader.so > " + parse_txt_path)
+                            " --reader=$QNN_SDK_ROOT/lib/x86_64-linux-clang/libQnnHtpProfilingReader.so > " + parse_txt_path)
                 # import pdb; pdb.set_trace()
 
 
@@ -170,7 +172,7 @@ def main():
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
     args = parser.parse_args()
-    init()
+    # init()
     test(args)
 
 
