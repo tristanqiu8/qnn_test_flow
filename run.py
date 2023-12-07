@@ -14,9 +14,9 @@ def init():  # step 0: initialize a qnn sdk environment
 def test(args):
     if not os.path.exists(args.out_dir):
         os.mkdir(args.out_dir)
-    else:
-        shutil.rmtree(args.out_dir)
-        os.mkdir(args.out_dir)
+    # else:
+    #     shutil.rmtree(args.out_dir)
+    #     os.mkdir(args.out_dir)
     
     with open('./conf/HtpConfigFile.json', 'r') as load_f:
         default_cfg_dict =json.load(load_f)
@@ -75,15 +75,45 @@ def test(args):
                 # step 2: prepare input.raw and its file txt
                 example = get_example(onnx_path)
                 sess = ort.InferenceSession(example, providers=ort.get_available_providers())
-                assert(len(sess.get_inputs()) == 1)  # handles only one input case as for now
+                if(len(sess.get_inputs()) > 1):  # handles only one input case as for now
+                    continue
                 # input_name = sess.get_inputs()[0].name
                 # print("input name", input_name)
                 input_shape = sess.get_inputs()[0].shape
+                if input_shape[1] not in [1, 3]:  # non-pic format use random
+                    in_format = "rand"
+                else:
+                    in_format = args.in_format
+                print("input format is " + in_format)
                 # print("input shape", input_shape)
-                x = np.random.random(input_shape)
-                x = x.astype(np.float32)
+                if in_format == "rand":
+                    x = np.random.randint(0, 255, size=input_shape).astype("uint8")
+                elif in_format == "zeros":
+                    x = np.zeros(input_shape).astype("uint8")
+                elif in_format == "real":
+                    from PIL import Image, ImageOps
+                    img = Image.open('./pic/deep_blue_avenue.jpg')
+                    # assert(input_shape[1] == 3)
+                    if input_shape[1] == 1:
+                        gray_img = ImageOps.grayscale(img)
+                        img = gray_img
+                        # img.show()
+                        # import pdb; pdb.set_trace()
+                    new_img = img.resize((input_shape[2], input_shape[3]))
+                    new_img.load()
+                    x = np.asarray(new_img, dtype="uint8")  # (H, W, C)
+                    # assert(img_data.shape[2]==3)
+                    # import pdb; pdb.set_trace()
+                    # x = np.transpose(img_data, (2, 0, 1))
+                else:
+                    x = np.random.randint(0, 255, size=input_shape).astype("uint8")
+
+                x_float = x.astype(np.float32)
+                # x = x.astype(np.uint8)
                 raw_input_path = os.path.abspath(os.path.join(model_dir, model_name + "_input.raw"))
-                x.tofile(raw_input_path)
+                raw_int8_input_path = os.path.abspath(os.path.join(model_dir, model_name + "_int8_input.raw"))
+                x_float.tofile(raw_input_path)
+                x.tofile(raw_int8_input_path)
                 input_list_path = os.path.join(model_dir, model_name + "_input_list.txt")
                 pc_input_list_path = os.path.join(model_dir, model_name + "_pc_input_list.txt")
                 f = open(input_list_path, 'w')
@@ -112,7 +142,7 @@ def test(args):
                 os.system("qnn-model-lib-generator -c " + cpp_path + " -b " +  model_bin_path + " -o " + model_dir)
                 # stage 3: serialized
                 model_lib_fname = "lib" + model_name + ".so"
-                binary_fname = "ctx_" + model_name
+                binary_fname = "ctx_" + model_name + ".serial"
                 lib_dir = os.path.join(model_dir, "x86_64-linux-clang")
                 so_path = os.path.abspath(os.path.join(lib_dir, model_lib_fname))
                 # os.system("cp ./conf/HtpConfigFile.json " + model_dir)
@@ -148,27 +178,32 @@ def test(args):
                 
                 # step 4: push to the pdb
                 # os.environ['MODEL_LIB'] = lib_dir
-                os.environ['MODEL_DIR'] = model_dir
-                os.environ['MODEL_NAME'] = model_name
-                os.environ['QNN_APP'] = args.app
-                os.system("bash run_single_adb.sh")
-                # parse the detailed result
-                log_path = os.path.abspath(os.path.join(model_dir, "output_detailed/qnn-profiling-data_0.log"))
-                parse_txt_path = os.path.abspath(os.path.join(model_dir, "qnn-profiling.txt"))
-                parse_csv_path = os.path.abspath(os.path.join(model_dir, "qnn-profiling.csv"))
-                os.system("./lib/x86_64-linux/bin/qnn-profile-viewer --input_log=" + log_path +
-                            " --output=" + parse_csv_path +
-                            " --reader=./lib/x86_64-linux/lib/libQnnHtpProfilingReader.so > " + parse_txt_path)
-                # import pdb; pdb.set_trace()
+                # if args.run:
+                #     os.environ['MODEL_DIR'] = model_dir
+                #     os.environ['MODEL_NAME'] = model_name
+                #     os.environ['QNN_APP'] = args.app
+                #     os.system("bash run_single_adb.sh")
+                #     # parse the detailed result
+                #     log_path = os.path.abspath(os.path.join(model_dir, "output_detailed/qnn-profiling-data_0.log"))
+                #     parse_txt_path = os.path.abspath(os.path.join(model_dir, "qnn-profiling.txt"))
+                #     parse_csv_path = os.path.abspath(os.path.join(model_dir, "qnn-profiling.csv"))
+                #     os.system("./lib/x86_64-linux/bin/qnn-profile-viewer --input_log=" + log_path +
+                #                 " --output=" + parse_csv_path +
+                #                 " --reader=./lib/x86_64-linux/lib/libQnnHtpProfilingReader.so > " + parse_txt_path)
+                    # import pdb; pdb.set_trace()
 
 
 def main():
     parser = ap.ArgumentParser()
-    parser.add_argument("--in_dir", help='target test case dir (Caffe)', required=True)
-    parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
-    parser.add_argument("--app", help="test run app", default="qnn-max100-app")
+    # parser.add_argument("--in_dir", help='target test case dir (caffe or onnx)', required=False, default="./benchmark/00_Open_Source_NetWorks/swinT")
+    # parser.add_argument("--in_dir", help='target test case dir (caffe or onnx)', required=False, default="./benchmark/01_DJI_Business_NetWorks/DJI_3A_FD")
+    parser.add_argument("--in_dir", help='target test case dir (caffe or onnx)', required=False, default="./benchmark/02_Constructed_Networks")
+    parser.add_argument("--out_dir", help='target dump directory', default="./benchmark_build")
+    parser.add_argument("--app", help="test run app", default="qnn-run-1min")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
-    parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
+    parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=8)
+    parser.add_argument("--in_format", help="format of input data: all zeros (zeros)/ random (rand)/picture(real)", default="real")
+    parser.add_argument("--run", help="run on hardware or not", type=bool, default=False)
     args = parser.parse_args()
     init()
     test(args)
