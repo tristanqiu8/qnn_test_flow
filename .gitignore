@@ -2,4 +2,4 @@
 *dump*/
 *log*
 *.code-workspace
-*.zip
+libdInfer.so
