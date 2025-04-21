@@ -14,7 +14,6 @@ adb push lib/$QNN_TARGET_ARCH/. /data/local/tmp/model/.
 
 #model and data:
 adb push $MODEL_LIB/. /data/local/tmp/model/.
-adb shell chmod  777 /data/local/tmp/model/qnn-sample-app
 adb shell chmod  777 /data/local/tmp/model/qnn-net-run
 adb shell chmod  777 /data/local/tmp/model/qnn-profile-viewer
 
