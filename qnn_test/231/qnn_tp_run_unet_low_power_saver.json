@@ -1,0 +1,43 @@
+{
+  "backends": [
+    {
+      "backendName": "htp_backend",
+      "backendPath": "libQnnHtp.so",
+      "profilingLevel": "OFF",
+      "backendExtensions": "libQnnHtpNetRunExtensions.so",
+      "perfProfile": "low_power_saver"
+    }
+  ],
+  "models": [
+    {
+      "modelName": "baiwang_unet",
+      "modelPath": "baiwang_quantized_b1.bin",
+      "loadFromCachedBinary": true,
+      "inputPath": "32_680_1024.txt",
+      "inputDataType": "FLOAT",
+      "outputPath": "output",
+      "outputDataType": "FLOAT_ONLY"
+    }
+  ],
+  "contexts": [
+    {
+      "contextName": "baiwang_unet"
+    }
+  ],
+  "testCase": {
+    "iteration": 1,
+    "threads": [
+      {
+        "threadName": "htp_thread",
+        "backend": "htp_backend",
+        "context": "baiwang_unet",
+        "model": "baiwang_unet",
+        "interval": 0,
+        "loopUnit": "count",
+        "loop": 1,
+        "executeAsynchronous": false,
+        "backendConfig": "vtcm_config_low_power_saver.json"
+      }
+    ]
+  }
+}

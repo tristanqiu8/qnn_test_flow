@@ -1,0 +1,480 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dInfer模型运行工具 &mdash; dInfer User Guide 0.0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=85179c66" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a0213dc"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="MNN原生工具" href="mnn_tool.html" />
+    <link rel="prev" title="dInfer工具箱" href="dInfer_toolkit.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dInfer User Guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/common_api.html">基本API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/common_api.html#tensor">获取Tensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/common_api.html#id5">性能统计</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/mnn_api.html">MNN高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/trt_api.html">TensorRT高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/qnn_api_v2.html">QNN高阶API V2使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/qnn_api.html">QNN高阶API V1使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/coreml_api.html">CoreML高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/paddle_lite_api.html">PaddleLite高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/tflite_api.html">TFLite高阶API使用</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dInfer_toolkit.html">dInfer工具箱</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">dInfer模型运行工具</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">使用方法</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">场景配置说明</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">场景配置格式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">场景配置示例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">常用测试步骤</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">输出结果示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mnn_tool.html">MNN原生工具</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dInfer User Guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">dInfer模型运行工具</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tools/dInferNetRun.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dinfer">
+<h1>dInfer模型运行工具<a class="headerlink" href="#dinfer" title="Link to this heading"></a></h1>
+<p>为了便于用户快速评估模型性能，提供了dInferNetRun二进制工具，用户可通过json文件配置不同的场景以及运行参数。</p>
+<ul class="simple">
+<li><p>场景运行持续时间、预热时间</p></li>
+<li><p>场景中每个任务的模型配置（模型文件路径、是否加密、框架、后端）以及时间配置（帧率限制、超时时间、延时偏移）</p></li>
+<li><p>特定后端配置信息：TRT、QNN等，可参考对应的高阶API说明</p>
+<ul>
+<li><p><a class="reference internal" href="../api/trt_api.html"><span class="doc">TensorRT高阶API使用</span></a></p></li>
+<li><p><a class="reference internal" href="../api/qnn_api.html"><span class="doc">QNN高阶API使用</span></a></p></li>
+</ul>
+</li>
+</ul>
+<section id="id1">
+<h2>使用方法<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>用户需要指定一个配置文件，用于描述测试场景（可以有多个），并在执行测试时指定一个测试场景名称。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage:
+<span class="w">    </span>--scene_cfgs<span class="o">=</span>/blackbox/nn_test/data/scene_cfgs.json
+<span class="w">        </span>指定测试场景配置文件，描述模型配置、运行配置、特定后端配置等
+
+<span class="w">    </span>--scene_name<span class="o">=</span>
+<span class="w">        </span>指定要运行的测试场景名称，为空时将依次运行所有场景
+
+<span class="w">    </span>--result_root<span class="o">=</span>/blackbox/nn_test/result
+<span class="w">        </span>指定结果存储目录
+
+<span class="w">    </span>--log_level<span class="o">=</span>DINFER_LOG_INFO
+<span class="w">        </span>指定log级别，可选值：DEBUG/INFO/WARNING/ERROR
+</pre></div>
+</div>
+<p>在<code class="docutils literal notranslate"><span class="pre">Android</span></code>、<code class="docutils literal notranslate"><span class="pre">AC204</span></code>、<code class="docutils literal notranslate"><span class="pre">OQ101</span></code>等设备上测试，可以使用<a class="reference internal" href="dInfer_toolkit.html"><span class="doc">dInfer工具箱</span></a>推送SDK、执行二进制程序。</p>
+<p>示例：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 在PC端运行</span>
+dInferNetRun<span class="w"> </span>--scene_cfgs<span class="o">=</span>./scene_cfgs.json<span class="w"> </span>--scene_name<span class="o">=</span>water_trt_demo<span class="w"> </span>--result_root<span class="o">=</span>./result<span class="w"> </span>--log_level<span class="o">=</span>DEBUG
+
+<span class="c1"># 借助dInfer_toolkit在AC204/OQ101等设备上运行（scene_cfgs和result_root使用默认值）</span>
+python<span class="w"> </span><span class="si">${</span><span class="nv">dInfer_sdk</span><span class="si">}</span>/dInfer_toolkit.py<span class="w"> </span>--push_sdk<span class="w"> </span>--push_data<span class="w"> </span>--run<span class="w"> </span>dInferNetRun<span class="w"> </span>--scene_name<span class="o">=</span>denoise_qnn_demo
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>场景配置说明<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>场景配置格式<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>场景配置的各个字段使用json schema定义，并在加载配置时进行校验。</p>
+<p>主要分为以下层级：</p>
+<ul class="simple">
+<li><p>测试场景: 可以配置场景的空闲时间、运行时间、预热时间，一个场景可以包含多个任务并发执行</p></li>
+<li><p>任务：可以配置任务的模型文件路径、模型是否加密、框架、后端、帧率限制、超时时间、延时偏移、特定后端配置信息等。</p></li>
+</ul>
+<p>相对路径将基于当前工作目录补全。</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;$schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://json-schema.org/draft/2020-12/schema&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dInferNetRun场景配置格式v1.0&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;scene_name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;idle_s&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;run_s&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;warmup_s&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;tasks&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;scene_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;场景名称&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;idle_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;场景运行前的空闲时间，通常用于采样静态功耗&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;run_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;场景运行时间&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;warmup_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;场景运行前期预热的时间，该时间段内不会进行耗时、超时、丢帧统计，该事件不能超过run_s&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;tasks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;场景中包含的推理任务列表，一个任务对应一个模型，每个任务会创建一个线程，多任务时并发执行&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;task_name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;model_path&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;encrypted&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;engine&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;device&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;fps_limit&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;pre_delay_ms&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;timeout_ms&quot;</span><span class="p">],</span>
+<span class="w">                    </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;task_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;任务/线程名称&quot;</span>
+<span class="w">                        </span><span class="p">},</span>
+<span class="w">                        </span><span class="nt">&quot;model_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;模型文件路径，绝对路径，或使用占位符处理相对路径&quot;</span>
+<span class="w">                        </span><span class="p">},</span>
+<span class="w">                        </span><span class="nt">&quot;encrypted&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;模型是否加密&quot;</span>
+<span class="w">                        </span><span class="p">},</span>
+<span class="w">                        </span><span class="nt">&quot;engine&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;模型使用的推理框架&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;TRT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;QNN&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;MNN&quot;</span><span class="p">,</span><span class="s2">&quot;TFLITE&quot;</span><span class="p">]</span>
+<span class="w">                        </span><span class="p">},</span>
+<span class="w">                        </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;模型运行后端&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;HTP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GPU&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;CPU&quot;</span><span class="p">]</span>
+<span class="w">                        </span><span class="p">},</span>
+<span class="w">                        </span><span class="nt">&quot;fps_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;任务的帧率限制，丢失的帧会被统计；0表示不限制（一帧结束后立即推理下一帧）&quot;</span>
+<span class="w">                        </span><span class="p">},</span>
+<span class="w">                        </span><span class="nt">&quot;pre_delay_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;首次推理延时，用于在多任务场景中控制各个任务的启动时间&quot;</span>
+<span class="w">                        </span><span class="p">},</span>
+<span class="w">                        </span><span class="nt">&quot;timeout_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;单帧推理超时时间，超时的帧会被统计；0表示不统计超时时间&quot;</span>
+<span class="w">                        </span><span class="p">},</span>
+<span class="w">                        </span><span class="nt">&quot;optional_attrs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;用于传递特定框架的配置信息&quot;</span><span class="p">,</span>
+<span class="w">                            </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                </span><span class="nt">&quot;qnn_load_from_cache&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+<span class="w">                                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;QNN加载模型是否为模型缓存（而不是模型库）&quot;</span>
+<span class="w">                                </span><span class="p">},</span>
+<span class="w">                                </span><span class="nt">&quot;qnn_shared_buffer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+<span class="w">                                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;QNN是否使用共享内存&quot;</span>
+<span class="w">                                </span><span class="p">},</span>
+<span class="w">                                </span><span class="nt">&quot;qnn_log_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;QNN内部日志等级&quot;</span><span class="p">,</span>
+<span class="w">                                    </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="p">]</span>
+<span class="w">                                </span><span class="p">},</span>
+<span class="w">                                </span><span class="nt">&quot;qnn_power_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">                                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;QNN功耗配置&quot;</span><span class="p">,</span>
+<span class="w">                                    </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;dcvsEnable&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;powerMode&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;sleepLatency&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;sleepDisable&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;busVoltageCornerMin&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;busVoltageCornerTarget&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;busVoltageCornerMax&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;coreVoltageCornerMin&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;coreVoltageCornerTarget&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;coreVoltageCornerMax&quot;</span><span class="p">],</span>
+<span class="w">                                    </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                        </span><span class="nt">&quot;dcvsEnable&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;是否启用DCVS&quot;</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;powerMode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;功耗模式&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ADJUST_UP_DOWN&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ADJUST_ONLY_UP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;POWER_SAVER_MODE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;POWER_SAVER_AGGRESSIVE_MODE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PERFORMANCE_MODE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;DUTY_CYCLE_MODE&quot;</span><span class="p">]</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;sleepLatency&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;睡眠延迟&quot;</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;sleepDisable&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;是否禁用睡眠&quot;</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;busVoltageCornerMin&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;内存总线VoltageCorner最小值&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;DISABLE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;MAX&quot;</span><span class="p">]</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;busVoltageCornerTarget&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;内存总线VoltageCorner目标值&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;DISABLE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;MAX&quot;</span><span class="p">]</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;busVoltageCornerMax&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;内存总线VoltageCorner最大值&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;DISABLE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;MAX&quot;</span><span class="p">]</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;coreVoltageCornerMin&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;计算核电压最小值&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;DISABLE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;MAX&quot;</span><span class="p">]</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;coreVoltageCornerTarget&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;计算核电压目标值&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;DISABLE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;MAX&quot;</span><span class="p">]</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;coreVoltageCornerMax&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;计算核电压最大值&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;DISABLE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SVS_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NOM_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_PLUS&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TURBO_L3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;MAX&quot;</span><span class="p">]</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;rpcControlLatency&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RPC控制延迟&quot;</span>
+<span class="w">                                        </span><span class="p">},</span>
+<span class="w">                                        </span><span class="nt">&quot;rpcPollingTime&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<span class="w">                                            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RPC轮询时间&quot;</span>
+<span class="w">                                        </span><span class="p">}</span>
+<span class="w">                                    </span><span class="p">}</span>
+<span class="w">                                </span><span class="p">},</span>
+<span class="w">                                </span><span class="nt">&quot;trt_cache_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TensorRT模型缓存路径，绝对路径，或使用占位符处理相对路径&quot;</span>
+<span class="w">                                </span><span class="p">}</span>
+<span class="w">                            </span><span class="p">}</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3>场景配置示例<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>以下是一个简单的示例：</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;scene_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;water_demo&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;用于演示单模型性能评估&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;idle_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;run_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;warmup_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;tasks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;task_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;water&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;model_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;model/water.onnx&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;encrypted&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;engine&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TRT&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GPU&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;fps_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;pre_delay_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;timeout_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;optional_attr&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;trt_cache_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;model/water.trtModel&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>其中时间相关配置可参考示意图：</p>
+<p><img alt="场景配置说明" src="../_images/dInferNetRun_demo.svg" /></p>
+<p>对于每个任务，以下信息将会被统计：</p>
+<ul class="simple">
+<li><p>每一帧的运行时间</p></li>
+<li><p>超时帧计数</p></li>
+<li><p>丢帧计数</p></li>
+<li><p>推理接口执行成功/失败计数</p></li>
+</ul>
+</section>
+</section>
+<section id="id5">
+<h2>常用测试步骤<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 以特定平台SDK目录为工作目录</span>
+<span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">dInferSDK</span><span class="si">}</span>/<span class="si">${</span><span class="nv">PLATFORM</span><span class="si">}</span>
+
+<span class="c1"># 准备模型</span>
+cp<span class="w"> </span><span class="si">${</span><span class="nv">test_model</span><span class="si">}</span><span class="w"> </span>model/
+
+<span class="c1"># 修改运行配置文件</span>
+vim<span class="w"> </span>./data/scene_cfgs.json
+
+<span class="c1"># 创建结果目录</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>result
+
+<span class="c1"># 执行测试</span>
+dInferNetRun<span class="w"> </span>--scene_cfgs<span class="o">=</span>./data/scene_cfgs.json<span class="w"> </span>--scene_name<span class="o">=</span>denoise_qnn_demo<span class="w"> </span>--result_root<span class="o">=</span>./result
+
+<span class="c1"># 查看结果及日志</span>
+cat<span class="w"> </span>./result/denoise_qnn_demo.json
+cat<span class="w"> </span>./result/denoise_qnn_demo.log
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>输出结果示例<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>输出结果中，包含完整的测试场景配置、任务配置。各个任务的耗时统计信息保存在<code class="docutils literal notranslate"><span class="pre">result</span></code>字段中。</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;cpu_info&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;device_model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;soc_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">577</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;soc_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SM8625&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;idle_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;run_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">60.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;scene_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;water_qnn_demo&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;tasks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DINFER_HTP&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;encrypted&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;engine&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DINFER_QNN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;fps_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">30.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;model_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;model/denoise_229_htp_vtcm8mb.serialized.bin&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;optional_attrs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;qnn_load_from_cache&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;qnn_log_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DINFER_LOG_WARNIING&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;qnn_power_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;busVoltageCornerMax&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;busVoltageCornerMin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;busVoltageCornerTarget&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;coreVoltageCornerMax&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;coreVoltageCornerMin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;coreVoltageCornerTarget&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NOM&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;dcvsEnable&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;powerMode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;POWER_SAVER_MODE&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;sleepDisable&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;sleepLatency&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;qnn_shared_buffer&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;pre_delay_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;avg_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.398794174194336</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;frame_dropped&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;frame_failed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;frame_successed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1801</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;frame_timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1801</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;init_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">130.82864379882813</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;max_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">21.131999969482422</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;min_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.081000328063965</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SUCCESSED&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;std_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3455895483493805</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;time_ms_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="mf">12.602999687194824</span><span class="p">,</span>
+<span class="w">                    </span><span class="mf">11.281000137329102</span><span class="p">,</span>
+<span class="w">                </span><span class="p">],</span>
+<span class="w">                </span><span class="nt">&quot;timestamp_us_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="p">[</span>
+<span class="w">                        </span><span class="mi">17708473373</span><span class="p">,</span>
+<span class="w">                        </span><span class="mi">17708485976</span>
+<span class="w">                    </span><span class="p">],</span>
+<span class="w">                    </span><span class="p">[</span>
+<span class="w">                        </span><span class="mi">17708507712</span><span class="p">,</span>
+<span class="w">                        </span><span class="mi">17708518993</span>
+<span class="w">                    </span><span class="p">],</span>
+<span class="w">                </span><span class="p">]</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;task_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;water&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;timeout_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;warmup_s&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="dInfer_toolkit.html" class="btn btn-neutral float-left" title="dInfer工具箱" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="mnn_tool.html" class="btn btn-neutral float-right" title="MNN原生工具" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022-2030, DJI。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

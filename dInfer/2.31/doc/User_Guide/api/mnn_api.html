@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MNN高阶API使用 &mdash; dInfer User Guide 0.0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=85179c66" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a0213dc"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="TensorRT高阶API使用" href="trt_api.html" />
+    <link rel="prev" title="基本API使用" href="common_api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dInfer User Guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="common_api.html">基本API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_api.html#tensor">获取Tensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_api.html#id5">性能统计</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MNN高阶API使用</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">调度配置选项</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">调度配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">后端配置</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#fallback">关于fallback逻辑</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">已弃用选项</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="trt_api.html">TensorRT高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qnn_api_v2.html">QNN高阶API V2使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qnn_api.html">QNN高阶API V1使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coreml_api.html">CoreML高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="paddle_lite_api.html">PaddleLite高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tflite_api.html">TFLite高阶API使用</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/dInfer_toolkit.html">dInfer工具箱</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools/dInferNetRun.html">dInfer模型运行工具</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools/mnn_tool.html">MNN原生工具</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dInfer User Guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">MNN高阶API使用</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/mnn_api.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mnnapi">
+<h1>MNN高阶API使用<a class="headerlink" href="#mnnapi" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>调度配置选项<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>在选择<code class="docutils literal notranslate"><span class="pre">DINFER_MNN</span></code>为runtime时，可以使用<code class="docutils literal notranslate"><span class="pre">schedule_config</span></code>选项设置MNN的调度配置，来精确控制推理类型、后端配置等。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;dInfer/dInfer_api_mnn.h&quot;</span>
+
+<span class="c1">// 设置调度配置</span>
+<span class="n">MNN</span><span class="o">::</span><span class="n">ScheduleConfig</span><span class="w"> </span><span class="n">schedule_config</span><span class="p">;</span>
+<span class="c1">// ...</span>
+
+<span class="c1">// 创建dInfer时传入调度配置选项</span>
+<span class="n">dInferModelInfo</span><span class="w"> </span><span class="n">info</span><span class="p">;</span>
+<span class="c1">// ...</span>
+<span class="n">info</span><span class="p">.</span><span class="n">optional_attrs</span><span class="p">[</span><span class="s">&quot;schedule_config&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">schedule_config</span><span class="p">);</span>
+<span class="n">dInferInterface</span><span class="w"> </span><span class="o">*</span><span class="n">infer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dInferInterfaceCreate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">info</span><span class="p">);</span><span class="w">   </span><span class="c1">// NOTE: 注意生存期</span>
+
+<span class="c1">// ...</span>
+</pre></div>
+</div>
+<p><strong>注意<code class="docutils literal notranslate"><span class="pre">schedule_config</span></code>的生存期，确保在创建完成前不被释放</strong></p>
+<p>以下具体定义和用法，摘自：<a class="reference external" href="https://mnn-docs.readthedocs.io/en/latest/inference/session.html">MNN Docs - Session API使用</a></p>
+<section id="id2">
+<h3>调度配置<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>调度配置定义如下：</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/** session schedule config */</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">ScheduleConfig</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/** which tensor should be kept */</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">saveTensors</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/** forward type */</span>
+<span class="w">    </span><span class="n">MNNForwardType</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MNN_FORWARD_CPU</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/** CPU:number of threads in parallel , Or GPU: mode setting*/</span>
+<span class="w">    </span><span class="k">union</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">numThread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">mode</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="cm">/** subpath to run */</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">Path</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputs</span><span class="p">;</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">outputs</span><span class="p">;</span>
+
+<span class="w">        </span><span class="k">enum</span><span class="w"> </span><span class="nc">Mode</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="cm">/**</span>
+<span class="cm">             * Op Mode</span>
+<span class="cm">             * - inputs means the source op, can NOT be empty.</span>
+<span class="cm">             * - outputs means the sink op, can be empty.</span>
+<span class="cm">             * The path will start from source op, then flow when encounter the sink op.</span>
+<span class="cm">             * The sink op will not be compute in this path.</span>
+<span class="cm">             */</span>
+<span class="w">            </span><span class="n">Op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+
+<span class="w">            </span><span class="cm">/**</span>
+<span class="cm">             * Tensor Mode</span>
+<span class="cm">             * - inputs means the inputs tensors, can NOT be empty.</span>
+<span class="cm">             * - outputs means the outputs tensors, can NOT be empty.</span>
+<span class="cm">             * It will find the pipeline that compute outputs from inputs.</span>
+<span class="cm">             */</span>
+<span class="w">            </span><span class="n">Tensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="p">};</span>
+
+<span class="w">        </span><span class="cm">/** running mode */</span>
+<span class="w">        </span><span class="n">Mode</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Op</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/** backup backend used to create execution when desinated backend do NOT support any op */</span>
+<span class="w">    </span><span class="n">MNNForwardType</span><span class="w"> </span><span class="n">backupType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MNN_FORWARD_CPU</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/** extra backend config */</span>
+<span class="w">    </span><span class="n">BackendConfig</span><span class="o">*</span><span class="w"> </span><span class="n">backendConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>推理时，主选后端由<code class="docutils literal notranslate"><span class="pre">type</span></code>指定，默认为CPU。若模型中存在主选后端不支持的算子，这些算子会使用由<code class="docutils literal notranslate"><span class="pre">backupType</span></code>指定的备选后端运行。</p>
+<p>推理路径包括由<code class="docutils literal notranslate"><span class="pre">path</span></code>的<code class="docutils literal notranslate"><span class="pre">inputs</span></code>到<code class="docutils literal notranslate"><span class="pre">outputs</span></code>途径的所有算子，在不指定时，会根据模型结构自动识别。为了节约内存，MNN会复用<code class="docutils literal notranslate"><span class="pre">outputs</span></code>之外的tensor内存。如果需要保留中间tensor的结果，可以使用<code class="docutils literal notranslate"><span class="pre">saveTensors</span></code>保留tensor结果，避免内存复用。</p>
+<p>CPU推理时，并发数与线程数可以由<code class="docutils literal notranslate"><span class="pre">numThread</span></code>修改。<code class="docutils literal notranslate"><span class="pre">numThread</span></code>决定并发数的多少，但具体线程数和并发效率，不完全取决于<code class="docutils literal notranslate"><span class="pre">numThread</span></code>：</p>
+<ul class="simple">
+<li><p>iOS，线程数由系统GCD决定；</p></li>
+<li><p>启用<code class="docutils literal notranslate"><span class="pre">MNN_USE_THREAD_POOL</span></code>时，线程数取决于第一次配置的大于1的<code class="docutils literal notranslate"><span class="pre">numThread</span></code>；</p></li>
+<li><p>OpenMP，线程数全局设置，实际线程数取决于最后一次配置的<code class="docutils literal notranslate"><span class="pre">numThread</span></code>；</p></li>
+</ul>
+<p>GPU推理时，可以通过mode来设置GPU运行的一些参量选择(暂时只支持OpenCL)。GPU mode参数如下：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// choose one tuning mode Only</span>
+<span class="w">    </span><span class="n">MNN_GPU_TUNING_NONE</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="cm">/* Forbidden tuning, performance not good */</span>
+<span class="w">    </span><span class="n">MNN_GPU_TUNING_HEAVY</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="cm">/* heavily tuning, usually not suggested */</span>
+<span class="w">    </span><span class="n">MNN_GPU_TUNING_WIDE</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="cm">/* widely tuning, performance good. Default */</span>
+<span class="w">    </span><span class="n">MNN_GPU_TUNING_NORMAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="cm">/* normal tuning, performance may be ok */</span>
+<span class="w">    </span><span class="n">MNN_GPU_TUNING_FAST</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="cm">/* fast tuning, performance may not good */</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// choose one opencl memory mode Only</span>
+<span class="w">    </span><span class="cm">/* User can try OpenCL_MEMORY_BUFFER and OpenCL_MEMORY_IMAGE both, then choose the better one according to performance*/</span>
+<span class="w">    </span><span class="n">MNN_GPU_MEMORY_BUFFER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="cm">/* User assign mode */</span>
+<span class="w">    </span><span class="n">MNN_GPU_MEMORY_IMAGE</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="cm">/* User assign mode */</span>
+<span class="p">}</span><span class="w"> </span><span class="n">MNNGpuMode</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>目前支持tuning力度以及GPU memory用户可自由设置。例如：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">MNN</span><span class="o">::</span><span class="n">ScheduleConfig</span><span class="w"> </span><span class="n">config</span><span class="p">;</span>
+<span class="n">config</span><span class="p">.</span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MNN_GPU_TUNING_NORMAL</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">MNN_GPU_MEMORY_IMAGE</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>tuning力度选取越高，第一次初始化耗时越多，推理性能越佳。如果介意初始化时间过长，可以选取MNN_GPU_TUNING_FAST或者MNN_GPU_TUNING_NONE，也可以同时通过下面的cache机制，第二次之后就不会慢。GPU_Memory用户可以指定使用MNN_GPU_MEMORY_BUFFER或者MNN_GPU_MEMORY_IMAGE，用户可以选择性能更佳的那一种。如果不设定，框架会采取默认判断帮你选取(不保证一定性能最优)。</p>
+<p><strong>上述CPU的numThread和GPU的mode，采用union联合体方式，共用同一片内存。用户在设置的时候numThread和mode只需要设置一种即可，不要重复设置。</strong></p>
+<p><strong>对于GPU初始化较慢的问题，提供了Cache机制</strong>。后续可以直接加载cache提升初始化速度。</p>
+<ul class="simple">
+<li><p>具体可以参考tools/cpp/MNNV2Basic.cpp里面setCacheFile设置cache方法进行使用。</p></li>
+<li><p>当模型推理输入尺寸有有限的多种时，每次resizeSession后调用updateCacheFile更新cache文件。</p></li>
+<li><p>当模型推理输入尺寸无限随机变化时，建议config.mode设为1，关闭MNN_GPU_TUNING。</p></li>
+</ul>
+<p>此外，可以通过<code class="docutils literal notranslate"><span class="pre">backendConfig</span></code>设定后端的额外参数。具体见下。</p>
+</section>
+<section id="id3">
+<h3>后端配置<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>后端配置定义如下：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">BackendConfig</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">enum</span><span class="w"> </span><span class="n">MemoryMode</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Memory_Normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Memory_High</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Memory_Low</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="n">MemoryMode</span><span class="w"> </span><span class="n">memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Memory_Normal</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="k">enum</span><span class="w"> </span><span class="n">PowerMode</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Power_Normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Power_High</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Power_Low</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="n">PowerMode</span><span class="w"> </span><span class="n">power</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Power_Normal</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="k">enum</span><span class="w"> </span><span class="n">PrecisionMode</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Precision_Normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Precision_High</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Precision_Low</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Precision_Low_BF16</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="n">PrecisionMode</span><span class="w"> </span><span class="n">precision</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Precision_Normal</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="cm">/** user defined context */</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">sharedContext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">memory</span></code>、<code class="docutils literal notranslate"><span class="pre">power</span></code>、<code class="docutils literal notranslate"><span class="pre">precision</span></code>分别为内存、功耗和精度偏好。支持这些选项的后端会在执行时做出相应调整；若不支持，则忽略选项。</p>
+<p>示例：
+后端 <strong>OpenCL</strong>
+<strong>precision 为 Low 时，使用 fp16 存储与计算</strong>，计算结果与CPU计算结果有少量误差，实时性最好；precision 为 Normal 时，使用 fp16存储，计算时将fp16转为fp32计算，计算结果与CPU计算结果相近，实时性也较好；precision 为 High 时，使用 fp32 存储与计算，实时性下降，但与CPU计算结果保持一致。</p>
+<p>后端 CPU
+<strong>precision 为 Low 时，根据设备情况开启 FP16 计算</strong>
+<strong>precision 为 Low_BF16 时，根据设备情况开启 BF16 计算</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">sharedContext</span></code>用于自定义后端，用户可以根据自身需要赋值。</p>
+</section>
+</section>
+<section id="fallback">
+<h2>关于fallback逻辑<a class="headerlink" href="#fallback" title="Link to this heading"></a></h2>
+<p>通过调度配置选项，用户可关闭默认的fallback逻辑，或修改fallback后端。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// dInfer API</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;dInfer/dInfer_api.h&quot;</span>
+
+<span class="c1">// test helper</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;file_path.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;test_utils.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;test/src/post_process/parsing.h&quot;</span>
+
+<span class="c1">// third party</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;gtest/gtest.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;opencv2/imgcodecs.hpp&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;opencv2/dnn/dnn.hpp&quot;</span>
+
+<span class="c1">// std</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * @brief 演示MNN Runtime的fallback逻辑</span>
+<span class="cm"> * </span>
+<span class="cm"> */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;dInfer/dInfer_api_mnn.h&quot;</span>
+<span class="n">TEST</span><span class="p">(</span><span class="n">mnn_runtime</span><span class="p">,</span><span class="w"> </span><span class="n">fallback_demo</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">string</span><span class="w"> </span><span class="n">test_result_folder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetCurrentTestDir</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">dInferModelInfo</span><span class="w"> </span><span class="n">info</span><span class="p">;</span>
+<span class="w">    </span><span class="n">MNN</span><span class="o">::</span><span class="n">ScheduleConfig</span><span class="w"> </span><span class="n">schedule_config</span><span class="p">;</span>
+<span class="w">    </span><span class="n">dInferInterface</span><span class="w"> </span><span class="o">*</span><span class="n">infer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// 1. 不使用高阶选项时，fallback逻辑会自动生效，device不可用时默认fallback到CPU</span>
+<span class="w">    </span><span class="n">info</span><span class="p">.</span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dInferDevice</span><span class="o">::</span><span class="n">DINFER_GPU</span><span class="p">;</span><span class="w"> </span><span class="c1">// NOTE: DINFER_GPU -&gt; MNN_FORWARD_OPENCL</span>
+<span class="w">    </span><span class="n">info</span><span class="p">.</span><span class="n">runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dInferEngine</span><span class="o">::</span><span class="n">DINFER_MNN</span><span class="p">;</span>
+<span class="w">    </span><span class="n">info</span><span class="p">.</span><span class="n">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="n">MODELZOO_PATH</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;water/water.mnn&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">info</span><span class="p">.</span><span class="n">model_encrypt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="n">infer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dInferInterfaceCreate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">info</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_NE</span><span class="p">(</span><span class="n">infer</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span><span class="w">  </span><span class="c1">// NOTE: 无论设备是否支持GPU都不会返回错误，用户不感知fallback</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">dInferInterfaceDestroy</span><span class="p">(</span><span class="n">infer</span><span class="p">),</span><span class="w"> </span><span class="n">DINFER_OK</span><span class="p">);</span><span class="w"> </span><span class="c1">// NOTE: 初始化永远会成功</span>
+<span class="w">    </span><span class="n">infer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// 2. 使用高阶选项指定forward type，type和backupType一致时则关闭fallback</span>
+<span class="w">    </span><span class="n">schedule_config</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MNN_FORWARD_VULKAN</span><span class="p">;</span><span class="w">  </span><span class="c1">// NOTE: 这里假定MNN未启用VULKAN编译</span>
+<span class="w">    </span><span class="n">schedule_config</span><span class="p">.</span><span class="n">backupType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MNN_FORWARD_VULKAN</span><span class="p">;</span>
+<span class="w">    </span><span class="n">info</span><span class="p">.</span><span class="n">optional_attrs</span><span class="p">[</span><span class="s">&quot;schedule_config&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">schedule_config</span><span class="p">);</span>
+<span class="w">    </span><span class="n">infer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dInferInterfaceCreate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">info</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">infer</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span><span class="w">  </span><span class="c1">// NOTE: 用户可通过返回值感知到初始化失败</span>
+
+<span class="w">    </span><span class="c1">// 3. 使用高阶选项指定forward type, 可以指定backupType为非CPU的其他类型</span>
+<span class="w">    </span><span class="n">schedule_config</span><span class="p">.</span><span class="n">backupType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MNN_FORWARD_OPENCL</span><span class="p">;</span>
+<span class="w">    </span><span class="n">info</span><span class="p">.</span><span class="n">optional_attrs</span><span class="p">[</span><span class="s">&quot;schedule_config&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">schedule_config</span><span class="p">);</span>
+<span class="w">    </span><span class="n">infer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dInferInterfaceCreate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">info</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ASSERT_NE</span><span class="p">(</span><span class="n">infer</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span><span class="w">  </span><span class="c1">// NOTE: 可以正常fallback非CPU后端</span>
+<span class="w">    </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">dInferInterfaceDestroy</span><span class="p">(</span><span class="n">infer</span><span class="p">),</span><span class="w"> </span><span class="n">DINFER_OK</span><span class="p">);</span>
+<span class="w">    </span><span class="n">infer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>已弃用选项<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>以下选项仍然保持兼容，但不建议使用，后续版本可能移除。建议使用<strong>调度配置选项</strong>。</p>
+<p>MNN自定义属性配置通过optional_attrs进行配置，optional_attrs的配置有如下：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">forward_type</span></code>:（可选）选择推理后端，默认为CPU，当选择的推理后端在当前设备不支持，则回退到CPU后端.0: CPU； 1: Metal； 2: CUDA；3: OpenCL； 6: OpenGL； 7: Vulkan; 9: TensorRT; */4:AUTO; 5: NNAPI or CoreML; 8: HIAI;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">number_thread</span></code>: （可选）默认值为4. forward type = CPU时，表示线程个数， 为GPU时，表示GPU Tuning模式。TMNNGpuMode, 具体值参考MNNForwardType.h*/</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">precision</span></code>:（可选）推理精度， 0: Normal； 1: High； 2: Low； 3: Low_BF16, 默认为2</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">power</span></code>:（可选）电量模式， 0: Normal； 1: High； 2: Low；  默认为0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">memory</span></code>:（可选）访存模式， 0: Normal； 1: High； 2: Low；  默认为0</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">optional_attrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="s">&quot;forward_type&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="common_api.html" class="btn btn-neutral float-left" title="基本API使用" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="trt_api.html" class="btn btn-neutral float-right" title="TensorRT高阶API使用" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022-2030, DJI。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+# CoreML高阶API使用
+
+CoreML自定义属性配置通过optional_attrs进行配置，optional_attrs的配置有如下：
+
+- `use_external_allocation`: （TODO: delete）要求dInfer使用用户分配、管理的内存。开启之后dInfer在初始化时只为TensorStream填写dtype、shape等信息，而不会分配内存空间。用户需要自行为输入、输出张量分配内存，随后在调用dInfer::Process()前将数据指针传入dInferTensor中。基础使用方法参考gtest：coreml_runtime.external_allocation。进阶使用方法参考gtest：coreml_runtime.output_double_buffering
+
+- 'high_performance': （可选）用户可以配置这个选项以达到更高性能. 统一nn后端的high performance配置!!
+   NORMAL_CONF = 0, //NOTE: 使用默认版本的invoke来推理,默认为该值
+   OUTPUT_DEEPCOPY = 1, //NOTE: nn后端的输出buffer拷贝到dInfer输出buffer. 
+   OUTPUT_ZEROCOPY = 2,//NOTE: nn后端的输出buffer地址赋值给dInfer输出tensor的buffer地址，需要注意stride
+   INOUT_ZEROCOPY = 3 //NOTE: 由用户配置输入输出的地址，需要注意stride
+```
+    dInferModelInfo info;
+    info.model_path = model_path;
+    info.device = DINFER_NPU;
+    info.runtime = DINFER_COREML;
+    info.model_encrypt = true;
+
+    info.optional_attrs["high_performance"] = reinterpret_cast<void *>(static_cast<uint64_t>(1));//NOTE:OUTPUT_DEEPCOPY
+    dInferInterface *infer = dInferInterfaceCreate(&info);
+
+```

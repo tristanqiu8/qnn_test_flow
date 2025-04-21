@@ -1,0 +1,138 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PaddleLite高阶API使用 &mdash; dInfer User Guide 0.0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=85179c66" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a0213dc"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="TFLite高阶API使用" href="tflite_api.html" />
+    <link rel="prev" title="CoreML高阶API使用" href="coreml_api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dInfer User Guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="common_api.html">基本API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_api.html#tensor">获取Tensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_api.html#id5">性能统计</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mnn_api.html">MNN高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trt_api.html">TensorRT高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qnn_api_v2.html">QNN高阶API V2使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qnn_api.html">QNN高阶API V1使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coreml_api.html">CoreML高阶API使用</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PaddleLite高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tflite_api.html">TFLite高阶API使用</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/dInfer_toolkit.html">dInfer工具箱</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools/dInferNetRun.html">dInfer模型运行工具</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools/mnn_tool.html">MNN原生工具</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dInfer User Guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PaddleLite高阶API使用</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/paddle_lite_api.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="paddleliteapi">
+<h1>PaddleLite高阶API使用<a class="headerlink" href="#paddleliteapi" title="Link to this heading"></a></h1>
+<p>PaddleLite自定义属性配置通过optional_attrs进行配置，optional_attrs的配置有如下：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">number_thread</span></code>: （可选）默认值为4.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">power</span></code>:（可选）电量模式, 默认为3  0: LITE_POWER_HIGH; 1: LITE_POWER_LOW; 2: LITE_POWER_FULL; 3: LITE_POWER_NO_BIND; 4: LITE_POWER_RAND_HIGH; 5: LITE_POWER_RAND_LOW</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">using_model_cache</span></code>: (可选) 是否保存model cached 到文件中，下一次使用时使用model cached。</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">optional_attrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="s">&quot;number_thread&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="coreml_api.html" class="btn btn-neutral float-left" title="CoreML高阶API使用" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="tflite_api.html" class="btn btn-neutral float-right" title="TFLite高阶API使用" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022-2030, DJI。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

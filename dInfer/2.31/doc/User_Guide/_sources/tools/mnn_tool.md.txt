@@ -1,0 +1,26 @@
+# MNN原生工具
+
+## 使用说明
+
+MNN官方说明：[MNN Docs - 测试工具](https://mnn-docs.readthedocs.io/en/latest/tools/test.html)
+
+必要的`binary`程序以及`python`脚本已经编译并打包到dInfer中，使用原生工具前，请将`${dInferSDK}/${PLATFORM}/bin/`路径加入到环境变量
+
+对于Windows PowerShell用户，请使用以下命令：
+
+```powershell
+$env:PATH += ";${dInferSDK}/${PLATFORM}/bin"
+```
+
+对于Linux用户，请使用以下命令：
+
+```bash
+export PATH="${dInferSDK}/${PLATFORM}/bin:$PATH"
+```
+
+## 建议步骤
+
+- 使用[MNN Docs - 模型转换](https://mnn-docs.readthedocs.io/en/latest/tools/convert.html)中的`testMNNFromOnnx.py`脚本，一键进行模型转换&CPU侧的正确性验证，正确性验证出错时通过[MNN Docs - 模型转换 - 出错及解决](https://mnn-docs.readthedocs.io/en/latest/tools/convert.html#id6)进一步分析
+- 使用[ModuleBasic工具](https://mnn-docs.readthedocs.io/en/latest/tools/test.html#modulebasic-out)中的`ModuleBasic.out`工具，进行特定后端配置的性能评估，例如`CUDA`后端、不同精度、内存、功耗模式等
+- 若希望进一步验证一致性，可使用[checkFile.out工具](https://mnn-docs.readthedocs.io/en/latest/tools/test.html#checkfile-out)和[checkDir.out工具](https://mnn-docs.readthedocs.io/en/latest/tools/test.html#checkdir-out)检查生成的`txt`文件，也可以将`txt`文件通过`np.loadtxt()`读取通过python进一步处理。
+- 若希望进一步分析算子耗时，可设置[ModuleBasic](https://mnn-docs.readthedocs.io/en/latest/tools/test.html#modulebasic-out)工具的`runMask`参数为`4`，以打印算子耗时。对于CPU后端，也可以使用[timeProfile工具](https://mnn-docs.readthedocs.io/en/latest/tools/test.html#timeprofile-out)

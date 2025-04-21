@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dInfer工具箱 &mdash; dInfer User Guide 0.0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=85179c66" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a0213dc"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="dInfer模型运行工具" href="dInferNetRun.html" />
+    <link rel="prev" title="TFLite高阶API使用" href="../api/tflite_api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dInfer User Guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/common_api.html">基本API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/common_api.html#tensor">获取Tensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/common_api.html#id5">性能统计</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/mnn_api.html">MNN高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/trt_api.html">TensorRT高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/qnn_api_v2.html">QNN高阶API V2使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/qnn_api.html">QNN高阶API V1使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/coreml_api.html">CoreML高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/paddle_lite_api.html">PaddleLite高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/tflite_api.html">TFLite高阶API使用</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">dInfer工具箱</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">支持平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">使用说明</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">示例</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sdk">推送SDK及测试数据</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">执行二进制程序</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sysmon-profiler">使用<code class="docutils literal notranslate"><span class="pre">sysmon</span> <span class="pre">profiler</span></code>分析系统资源</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dInferNetRun.html">dInfer模型运行工具</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mnn_tool.html">MNN原生工具</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dInfer User Guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">dInfer工具箱</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tools/dInfer_toolkit.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dinfer">
+<h1>dInfer工具箱<a class="headerlink" href="#dinfer" title="Link to this heading"></a></h1>
+<p>为了便于用户进行设备端调试，dInferSDK中打包了<code class="docutils literal notranslate"><span class="pre">dInfer_toolkit.py</span></code>，用户可以方便的通过<code class="docutils literal notranslate"><span class="pre">dInfer_toolkit.py</span></code>进行SDK推送、数据推送、执行二进制程序、结果拉取、使用<code class="docutils literal notranslate"><span class="pre">sysmon</span> <span class="pre">profiler</span></code>分析系统资源等操作。</p>
+<section id="id1">
+<h2>支持平台<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>目前以下平台支持<code class="docutils literal notranslate"><span class="pre">dInfer_toolkit.py</span></code>：</p>
+<ul class="simple">
+<li><p>ANDROID</p></li>
+<li><p>QCOM_LE</p></li>
+<li><p>JETSON</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>使用说明<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>请使用<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">&gt;=</span> <span class="pre">3.8</span></code>运行脚本</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--help
+usage:<span class="w"> </span>dInfer_toolkit.py<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>--adb<span class="w"> </span>ADB<span class="o">]</span><span class="w"> </span><span class="o">[</span>--sdk_path<span class="w"> </span>SDK_PATH<span class="o">]</span><span class="w"> </span><span class="o">[</span>--dev_tmp_path<span class="w"> </span>DEV_TMP_PATH<span class="o">]</span><span class="w"> </span><span class="o">[</span>--dev_sdcard_path<span class="w"> </span>DEV_SDCARD_PATH<span class="o">]</span><span class="w"> </span><span class="o">[</span>--result_path<span class="w"> </span>RESULT_PATH<span class="o">]</span><span class="w"> </span><span class="o">[</span>--push_data<span class="o">]</span><span class="w"> </span><span class="o">[</span>--push_sdk<span class="o">]</span><span class="w"> </span><span class="o">[</span>--push_lib<span class="o">]</span>
+<span class="w">                         </span><span class="o">[</span>--push_test<span class="o">]</span><span class="w"> </span><span class="o">[</span>--push_model<span class="o">]</span><span class="w"> </span><span class="o">[</span>--pull_result<span class="o">]</span><span class="w"> </span><span class="o">[</span>--args<span class="o">]</span><span class="w"> </span><span class="o">[</span>--nohup<span class="o">]</span><span class="w"> </span><span class="o">[</span>--sysmon_profiler<span class="o">]</span><span class="w"> </span><span class="o">[</span>--profiler_s<span class="w"> </span>PROFILER_S<span class="o">]</span><span class="w"> </span><span class="o">[</span>--push_bin<span class="o">]</span><span class="w"> </span><span class="o">[</span>--run<span class="w"> </span>...<span class="o">]</span><span class="w"> </span><span class="o">[</span>--data_path<span class="w"> </span>DATA_PATH<span class="o">]</span>
+<span class="w">                         </span><span class="o">[</span>--model_path<span class="w"> </span>MODEL_PATH<span class="o">]</span>
+
+dInfer<span class="w"> </span>Toolkit
+
+options:
+<span class="w">  </span>-h,<span class="w"> </span>--help<span class="w">            </span>show<span class="w"> </span>this<span class="w"> </span><span class="nb">help</span><span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span><span class="nb">exit</span>
+<span class="w">  </span>--adb<span class="w"> </span>ADB<span class="w">             </span>adb<span class="w"> </span><span class="nb">command</span>
+<span class="w">  </span>--sdk_path<span class="w"> </span>SDK_PATH<span class="w">   </span><span class="nb">set</span><span class="w"> </span>sdk<span class="w"> </span>folder<span class="w"> </span>of<span class="w"> </span>specific<span class="w"> </span>platform<span class="w"> </span><span class="k">in</span><span class="w"> </span>dInfer_out,<span class="w"> </span>eg:<span class="w"> </span>dInfer/dInfer_out/ANDROID
+<span class="w">  </span>--dev_tmp_path<span class="w"> </span>DEV_TMP_PATH
+<span class="w">                        </span><span class="nb">set</span><span class="w"> </span>tmp<span class="w"> </span>folder<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>test,lib<span class="w"> </span>on<span class="w"> </span>device
+<span class="w">  </span>--dev_sdcard_path<span class="w"> </span>DEV_SDCARD_PATH
+<span class="w">                        </span><span class="nb">set</span><span class="w"> </span>sdcard<span class="w"> </span>folder<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>model,testdata,config<span class="w"> </span>on<span class="w"> </span>device
+<span class="w">  </span>--result_path<span class="w"> </span>RESULT_PATH
+<span class="w">                        </span><span class="nb">set</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span>result<span class="w"> </span>folder<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>result<span class="w"> </span>data<span class="w"> </span>and<span class="w"> </span>log
+<span class="w">  </span>--push_data<span class="w">           </span>push<span class="w"> </span><span class="nb">test</span><span class="w"> </span>data<span class="w"> </span>to<span class="w"> </span>device
+<span class="w">  </span>--push_sdk<span class="w">            </span>push<span class="w"> </span>total<span class="w"> </span>sdk<span class="o">(</span>dsp,lib,model,test<span class="o">)</span><span class="w"> </span>to<span class="w"> </span>device
+<span class="w">  </span>--push_lib<span class="w">            </span>push<span class="w"> </span>only<span class="w"> </span>lib<span class="w"> </span>and<span class="w"> </span>dsp<span class="w"> </span>to<span class="w"> </span>device
+<span class="w">  </span>--push_test<span class="w">           </span>DEPRECATED,<span class="w"> </span>please<span class="w"> </span>use<span class="w"> </span>--push_bin
+<span class="w">  </span>--push_model<span class="w">          </span>push<span class="w"> </span>only<span class="w"> </span>model<span class="w"> </span>to<span class="w"> </span>device
+<span class="w">  </span>--pull_result<span class="w">         </span>only<span class="w"> </span>pull<span class="w"> </span>result<span class="w"> </span>directory<span class="w"> </span>from<span class="w"> </span>device
+<span class="w">  </span>--args<span class="w">                </span>DEPRECATED,<span class="w"> </span>please<span class="w"> </span>use<span class="w"> </span>--run
+<span class="w">  </span>--nohup<span class="w">               </span>run<span class="w"> </span>gtest<span class="w"> </span><span class="k">in</span><span class="w"> </span>background
+<span class="w">  </span>--sysmon_profiler<span class="w">     </span>use<span class="w"> </span>sysmonApp<span class="w"> </span>profiler
+<span class="w">  </span>--profiler_s<span class="w"> </span>PROFILER_S
+<span class="w">                        </span>sysmon<span class="w"> </span>profiler<span class="w"> </span>duration<span class="w"> </span>seconds
+<span class="w">  </span>--push_bin<span class="w">            </span>push<span class="w"> </span>only<span class="w"> </span>bin<span class="w"> </span>to<span class="w"> </span>device
+<span class="w">  </span>--run<span class="w"> </span>...<span class="w">             </span>run<span class="w"> </span>bin<span class="w"> </span>on<span class="w"> </span>device,<span class="w"> </span>eg:<span class="w"> </span><span class="s2">&quot;--run dInferTest --gtest_list_tests&quot;</span>,<span class="w"> </span>or<span class="w"> </span><span class="s2">&quot;--run dInferNetRun&quot;</span>
+<span class="w">  </span>--data_path<span class="w"> </span>DATA_PATH
+<span class="w">                        </span><span class="nb">set</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span>data<span class="w"> </span>folder<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span><span class="nb">test</span><span class="w"> </span>data
+<span class="w">  </span>--model_path<span class="w"> </span>MODEL_PATH
+<span class="w">                        </span><span class="nb">set</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span>model<span class="w"> </span>folder<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>model
+</pre></div>
+</div>
+<section id="id3">
+<h3>示例<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="sdk">
+<h4>推送SDK及测试数据<a class="headerlink" href="#sdk" title="Link to this heading"></a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 推送SDK及测试数据</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--push_sdk<span class="w"> </span>--push_data
+
+<span class="c1"># 仅推送SDK</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--push_sdk
+
+<span class="c1"># 仅推送测试数据</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--push_data
+
+<span class="c1"># 仅推送SDK中的库</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--push_libs
+
+<span class="c1"># 仅推送SDK中的可执行文件</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--push_bin
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h4>执行二进制程序<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 列出dInferTest测试用例</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--run<span class="w"> </span>dInferTest<span class="w"> </span>--gtest_list_tests
+
+<span class="c1"># 执行dInferTest全量测试</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--run<span class="w"> </span>dInferTest
+
+<span class="c1"># 执行dInferTest指定测试用例</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--run<span class="w"> </span>dInferTest<span class="w"> </span>--gtest_filter<span class="o">=</span>osal.*
+
+<span class="c1"># 查看dInferNetRun帮助</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--run<span class="w"> </span>dInferNetRunApp<span class="w"> </span>--help
+
+<span class="c1"># 执行dInferNetRun</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--run<span class="w"> </span>dInferNetRunApp
+</pre></div>
+</div>
+</section>
+<section id="sysmon-profiler">
+<h4>使用<code class="docutils literal notranslate"><span class="pre">sysmon</span> <span class="pre">profiler</span></code>分析系统资源<a class="headerlink" href="#sysmon-profiler" title="Link to this heading"></a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用sysmon profiler分析dInferNetRunApp</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--sysmon_profiler<span class="w"> </span>--run<span class="w"> </span>dInferNetRunApp
+<span class="c1"># 使用sysmon profiler分析dInferNetRunApp，并设置分析时长为20秒</span>
+python<span class="w"> </span>/path/to/dInfer_toolkit.py<span class="w"> </span>--sysmon_profiler<span class="w"> </span>--profiler_s<span class="w"> </span><span class="m">20</span><span class="w"> </span>--run<span class="w"> </span>dInferNetRunApp
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="../api/tflite_api.html" class="btn btn-neutral float-left" title="TFLite高阶API使用" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="dInferNetRun.html" class="btn btn-neutral float-right" title="dInfer模型运行工具" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022-2030, DJI。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

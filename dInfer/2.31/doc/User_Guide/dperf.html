@@ -1,0 +1,156 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dperf使用(deprecated) &mdash; dInfer User Guide 0.0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=85179c66" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5a0213dc"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=beaddf03"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            dInfer User Guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/common_api.html">基本API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/common_api.html#tensor">获取Tensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/common_api.html#id5">性能统计</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/mnn_api.html">MNN高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/trt_api.html">TensorRT高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/qnn_api_v2.html">QNN高阶API V2使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/qnn_api.html">QNN高阶API V1使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/coreml_api.html">CoreML高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/paddle_lite_api.html">PaddleLite高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/tflite_api.html">TFLite高阶API使用</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tools/dInfer_toolkit.html">dInfer工具箱</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools/dInferNetRun.html">dInfer模型运行工具</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools/mnn_tool.html">MNN原生工具</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dInfer User Guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">dperf使用(deprecated)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/dperf.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dperf-deprecated">
+<h1>dperf使用(deprecated)<a class="headerlink" href="#dperf-deprecated" title="Link to this heading"></a></h1>
+<p>dperf通用case: 用于通过配置相关json文件，进行模型性能摸底，配置文件参照：<code class="docutils literal notranslate"><span class="pre">/dInfer/data/qnn/qnn_dperf.json</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">framework</span></code>: 原模型使用推理框架 （含&quot;qnn&quot;,其他暂缺）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dInferModelInfo</span></code>：dinfer框架通用属性配置：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_path</span></code>：模型在设备端路径</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">backend</span></code>：使用后端（含&quot;HTP&quot;,&quot;CPU&quot;,&quot;GPU&quot;,&quot;HTA&quot;）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_encrypt</span></code>：使用后端（含&quot;true&quot;,&quot;false&quot;）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_runtimes</span></code>：模型推理前向次数</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qnnModelInfo</span></code>：dInfer-QNN相关属性配置：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">qnn_load_from_cache</span></code>：设备是否以(.seialized.bin)方式加载（含&quot;true&quot;,&quot;false&quot;）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qnn_power_level</span></code>：选择使用的性能模式（含&quot;HIGH_PERFORMANCE&quot;、&quot;BALANCED&quot;、&quot;HIGH_POWER_SAVER&quot;）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qnn_precision</span></code>：采用的精度模式（含&quot;HTP&quot;,&quot;HTPFP16&quot;&quot;NONE&quot;）目前只有在使用HTPFP16，该设置采用起作用；</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qnn_graph_name</span></code>：采用的精度模式（qnn graph的名字，可以参照对应的cpp文件）该设置目前只有在qnn_precision设置成HTPFP16才会起作用；</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qnn_op_profiling</span></code>：是否进行qnn op 的profiling信息打印（如果不进行profiling则配置&quot;false&quot;，否则此项配置为保存的csv的路径；如&quot;/data/local/tmp/model.csv&quot;）</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">input_bin</span></code>：dinfer输入数据配置：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">data_type</span></code>：DINFER输入数据类型（目前含DINFER_U8，DINFER_F32，DINFER_F16），必须模型输入datatype一致。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layerout</span></code>：DINFER输入数据内存排布（目前含DINFER_NHWC，DINFER_NCHW），必须模型输入layerout一致。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data_path</span></code>：输入数据buffer对应的二进制文件路径数组，和输入buffer的data_type， layerout以及size对应。需要注意：如果输入数据路径错误，不会报错，会采用全0值。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_bin</span></code>：dinfer输出数据配置：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">data_type</span></code>：DINFER输出数据类型（目前含DINFER_U8，DINFER_F32，DINFER_F16），必须模型输出datatype一致。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layerout</span></code>：DINFER输出数据内存排布（目前含DINFER_NHWC，DINFER_NCHW），必须模型输出layerout一致。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data_path</span></code>：输出数据buffer对应的二进制保存的文件路径数组，和输出buffer的data_type， layerout以及size对应。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022-2030, DJI。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

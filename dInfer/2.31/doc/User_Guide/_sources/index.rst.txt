@@ -1,0 +1,53 @@
+#######################################################
+dInfer User Guide
+#######################################################
+
+
+What is dInfer?
+=======================================================
+dInfer是机器学习公版推理库，集成主流三方推理框架，对业务方提供统一的模型推理API以及评估工具。
+
+.. list-table:: 已集成的三方推理框架
+   :header-rows: 1
+
+   * - 作者
+     - 推理框架
+     - 来源
+   * - Alibaba
+     - MNN
+     - https://github.com/alibaba/MNN
+   * - Qualcomm
+     - QNN
+     - https://qpm.qualcomm.com/#/main/tools/details/QPM3
+   * - Apple
+     - CoreML
+     - https://developer.apple.com/cn/documentation/coreml/
+   * - Google
+     - TFLite
+     - https://github.com/tensorflow/tensorflow
+   * - PaddlePaddle
+     - PaddleLite
+     - https://github.com/PaddlePaddle/Paddle-Lite
+
+.. toctree:: 
+    :maxdepth: 3
+    :caption: API使用指南
+    :name: api_usage
+
+    api/common_api
+    api/mnn_api
+    api/trt_api
+    api/qnn_api_v2
+    api/qnn_api
+    api/coreml_api
+    api/paddle_lite_api
+    api/tflite_api
+
+.. toctree::
+    :maxdepth: 3
+    :caption: API使用指南
+    :name: tools
+
+    tools/dInfer_toolkit
+    tools/dInferNetRun
+    tools/mnn_tool

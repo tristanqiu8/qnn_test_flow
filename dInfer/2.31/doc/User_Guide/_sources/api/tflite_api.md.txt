@@ -1,0 +1,17 @@
+# TFLite高阶API使用
+
+TFLite自定义属性配置通过optional_attrs进行配置，optional_attrs的配置有如下：
+
+- `tflite_cpu_thread`:（可选）配置tflite算子在CPU的线程数，默认为4；
+- `tflite_gpu_accuracy`: （可选）配置tflite GPU后端时，NN部署的精度，DINFER_F16(default)/DINFER_F32.
+- `tflite_serialization_dir`: （可选）配置tflite GPU后端时，选择GPU kernel序列化的路径，确保可写&可读！
+- `tflite_model_token`:（可选）配置tflite GPU后端时，配置特定的string值，用来区分不同模型的GPU kernel序列化文件；
+
+   ```c++
+   dInferDataType tflite_infer_accuracy = DINFER_F16;
+   int tflite_cpu_thread = 4;
+
+   std::map<std::string, void *> optional_attrs;
+   optional_attrs.insert({ "tflite_gpu_accuracy", &tflite_infer_accuracy });
+   optional_attrs.insert({ "tflite_cpu_thread", &tflite_cpu_thread });
+   ```

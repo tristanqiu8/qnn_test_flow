@@ -1,0 +1,254 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "dInferNetRun场景配置格式v1.0",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "required": ["scene_name", "idle_s", "run_s", "warmup_s", "tasks"],
+        "properties": {
+            "scene_name": {
+                "type": "string",
+                "description": "场景名称"
+            },
+            "idle_s": {
+                "type": "number",
+                "description": "场景运行前的空闲时间，通常用于采样静态功耗"
+            },
+            "run_s": {
+                "type": "number",
+                "description": "场景运行时间"
+            },
+            "warmup_s": {
+                "type": "number",
+                "description": "场景运行前期预热的时间，该时间段内不会进行耗时、超时、丢帧统计，该时间不能超过run_s"
+            },
+            "tasks": {
+                "type": "array",
+                "description": "场景中包含的推理任务列表，一个任务对应一个模型，每个任务会创建一个线程，多任务时并发执行",
+                "items": {
+                    "type": "object",
+                    "required": ["task_name", "model_path", "encrypted", "engine", "device", "fps_limit", "pre_delay_ms", "timeout_ms"],
+                    "properties": {
+                        "task_name": {
+                            "type": "string",
+                            "description": "任务/线程名称"
+                        },
+                        "model_path": {
+                            "type": "string",
+                            "description": "模型文件路径，绝对路径，或使用占位符处理相对路径"
+                        },
+                        "encrypted": {
+                            "type": "boolean",
+                            "description": "模型是否加密"
+                        },
+                        "engine": {
+                            "type": "string",
+                            "description": "模型使用的推理框架",
+                            "enum": ["TRT", "QNN", "MNN","TFLITE"]
+                        },
+                        "device": {
+                            "type": "string",
+                            "description": "模型运行后端",
+                            "enum": ["HTP", "GPU", "CPU"]
+                        },
+                        "fps_limit": {
+                            "type": "number",
+                            "description": "任务的帧率限制，丢失的帧会被统计；0表示不限制（一帧结束后立即推理下一帧）"
+                        },
+                        "pre_delay_ms": {
+                            "type": "number",
+                            "description": "首次推理延时，用于在多任务场景中控制各个任务的启动时间，该时间不能超过warmup_s"
+                        },
+                        "timeout_ms": {
+                            "type": "number",
+                            "description": "单帧推理超时时间，超时的帧会被统计；0表示不统计超时时间"
+                        },
+                        "optional_attrs": {
+                            "type": "object",
+                            "description": "用于传递特定框架的配置信息",
+                            "properties": {
+                                "qnn_load_from_cache": {
+                                    "type": "boolean",
+                                    "description": "QNN加载模型是否为模型缓存（而不是模型库）"
+                                },
+                                "qnn_shared_buffer": {
+                                    "type": "boolean",
+                                    "description": "QNN是否使用共享内存"
+                                },
+                                "qnn_log_level": {
+                                    "type": "string",
+                                    "description": "QNN内部日志等级",
+                                    "enum": ["DEBUG", "INFO", "WARNING", "ERROR"]
+                                },
+                                "qnn_power_config": {
+                                    "type": "object",
+                                    "description": "QNN功耗配置",
+                                    "required": ["dcvsEnable", "powerMode", "sleepLatency", "sleepDisable", "busVoltageCornerMin", "busVoltageCornerTarget", "busVoltageCornerMax", "coreVoltageCornerMin", "coreVoltageCornerTarget", "coreVoltageCornerMax"],
+                                    "properties": {
+                                        "dcvsEnable": {
+                                            "type": "boolean",
+                                            "description": "是否启用DCVS"
+                                        },
+                                        "powerMode": {
+                                            "type": "string",
+                                            "description": "功耗模式",
+                                            "enum": ["ADJUST_UP_DOWN", "ADJUST_ONLY_UP", "POWER_SAVER_MODE", "POWER_SAVER_AGGRESSIVE_MODE", "PERFORMANCE_MODE", "DUTY_CYCLE_MODE"]
+                                        },
+                                        "sleepLatency": {
+                                            "type": "number",
+                                            "description": "睡眠延迟"
+                                        },
+                                        "sleepDisable": {
+                                            "type": "boolean",
+                                            "description": "是否禁用睡眠"
+                                        },
+                                        "busVoltageCornerMin": {
+                                            "type": "string",
+                                            "description": "内存总线VoltageCorner最小值",
+                                            "enum": ["DISABLE", "SVS2", "SVS", "SVS_PLUS", "NOM", "NOM_PLUS", "TURBO", "TURBO_PLUS", "TURBO_L2", "TURBO_L3", "MAX"]
+                                        },
+                                        "busVoltageCornerTarget": {
+                                            "type": "string",
+                                            "description": "内存总线VoltageCorner目标值",
+                                            "enum": ["DISABLE", "SVS2", "SVS", "SVS_PLUS", "NOM", "NOM_PLUS", "TURBO", "TURBO_PLUS", "TURBO_L2", "TURBO_L3", "MAX"]
+                                        },
+                                        "busVoltageCornerMax": {
+                                            "type": "string",
+                                            "description": "内存总线VoltageCorner最大值",
+                                            "enum": ["DISABLE", "SVS2", "SVS", "SVS_PLUS", "NOM", "NOM_PLUS", "TURBO", "TURBO_PLUS", "TURBO_L2", "TURBO_L3", "MAX"]
+                                        },
+                                        "coreVoltageCornerMin": {
+                                            "type": "string",
+                                            "description": "计算核电压最小值",
+                                            "enum": ["DISABLE", "SVS2", "SVS", "SVS_PLUS", "NOM", "NOM_PLUS", "TURBO", "TURBO_PLUS", "TURBO_L2", "TURBO_L3", "MAX"]
+                                        },
+                                        "coreVoltageCornerTarget": {
+                                            "type": "string",
+                                            "description": "计算核电压目标值",
+                                            "enum": ["DISABLE", "SVS2", "SVS", "SVS_PLUS", "NOM", "NOM_PLUS", "TURBO", "TURBO_PLUS", "TURBO_L2", "TURBO_L3", "MAX"]
+                                        },
+                                        "coreVoltageCornerMax": {
+                                            "type": "string",
+                                            "description": "计算核电压最大值",
+                                            "enum": ["DISABLE", "SVS2", "SVS", "SVS_PLUS", "NOM", "NOM_PLUS", "TURBO", "TURBO_PLUS", "TURBO_L2", "TURBO_L3", "MAX"]
+                                        },
+                                        "rpcControlLatency": {
+                                            "type": "number",
+                                            "description": "RPC控制延迟"
+                                        },
+                                        "rpcPollingTime": {
+                                            "type": "number",
+                                            "description": "RPC轮询时间"
+                                        }
+                                    }
+                                },
+                                "trt_cache_path": {
+                                    "type": "string",
+                                    "description": "TensorRT模型缓存路径，绝对路径，或使用占位符处理相对路径"
+                                },
+                                "tflite_cpu_thread": {
+                                    "type": "number",
+                                    "description": "TFLite CPU线程数，默认为4"
+                                },
+                                "tflite_gpu_accuracy": {
+                                    "type": "string",
+                                    "description": "TFLite GPU推理精度，默认为F16",
+                                    "enum": ["F16", "F32"]
+                                },
+                                "tflite_serialization_dir": {
+                                    "type": "string",
+                                    "description": "TFLite模型序列化路径，选择GPU kernel序列化的路径，确保可读写"
+                                },
+                                "tflite_model_token": {
+                                    "type": "string",
+                                    "description": "TFLite模型token，使用GPU后端时，配置特定的string值，用来区分不同模型的GPU kernel序列化文件"
+                                },
+                                "mnn_schedule_config": {
+                                    "type": "object",
+                                    "description": "MNN推理调度配置，不提供时会使用默认值",
+                                    "properties": {
+                                        "saveTensors": {
+                                            "type": "array",
+                                            "description": "需要保留的tensor名称列表",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "description": "推理后端类型",
+                                            "enum": ["MNN_FORWARD_CPU", "MNN_FORWARD_AUTO", "MNN_FORWARD_METAL", "MNN_FORWARD_CUDA", "MNN_FORWARD_OPENCL", "MNN_FORWARD_OPENGL", "MNN_FORWARD_VULKAN", "MNN_FORWARD_NN", "MNN_FORWARD_USER_0", "MNN_FORWARD_USER_1", "MNN_FORWARD_USER_2", "MNN_FORWARD_USER_3", "MNN_FORWARD_ALL", "MNN_FORWARD_CPU_EXTENSION"]
+                                        },
+                                        "numThread": {
+                                            "type": "number",
+                                            "description": "CPU并行线程数，默认为4"
+                                        },
+                                        "mode": {
+                                            "type": "number",
+                                            "description": "GPU模式设置"
+                                        },
+                                        "path": {
+                                            "type": "object",
+                                            "description": "推理路径配置",
+                                            "properties": {
+                                                "inputs": {
+                                                    "type": "array",
+                                                    "description": "输入tensor",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "outputs": {
+                                                    "type": "array",
+                                                    "description": "输出tensor",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "mode": {
+                                                    "type": "string",
+                                                    "description": "运行模式",
+                                                    "enum": ["Op", "Tensor"]
+                                                }
+                                            }
+                                        },
+                                        "backupType": {
+                                            "type": "string",
+                                            "description": "备选后端类型",
+                                            "enum": ["MNN_FORWARD_CPU", "MNN_FORWARD_AUTO", "MNN_FORWARD_METAL", "MNN_FORWARD_CUDA", "MNN_FORWARD_OPENCL", "MNN_FORWARD_OPENGL", "MNN_FORWARD_VULKAN", "MNN_FORWARD_NN", "MNN_FORWARD_USER_0", "MNN_FORWARD_USER_1", "MNN_FORWARD_USER_2", "MNN_FORWARD_USER_3", "MNN_FORWARD_ALL", "MNN_FORWARD_CPU_EXTENSION"]
+                                        },
+                                        "backendConfig": {
+                                            "type": "object",
+                                            "description": "后端配置",
+                                            "properties": {
+                                                "memory": {
+                                                    "type": "string",
+                                                    "description": "内存模式",
+                                                    "enum": ["Memory_Normal", "Memory_High", "Memory_Low"]
+                                                },
+                                                "power": {
+                                                    "type": "string",
+                                                    "description": "功耗模式",
+                                                    "enum": ["Power_Normal", "Power_High", "Power_Low"]
+                                                },
+                                                "precision": {
+                                                    "type": "string",
+                                                    "description": "精度模式",
+                                                    "enum": ["Precision_Normal", "Precision_High", "Precision_Low", "Precision_Low_BF16"]
+                                                },
+                                                "flags": {
+                                                    "type": "number",
+                                                    "description": "标志位"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

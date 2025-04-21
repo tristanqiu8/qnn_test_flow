@@ -1,0 +1,102 @@
+# dInfer工具箱
+
+为了便于用户进行设备端调试，dInferSDK中打包了`dInfer_toolkit.py`，用户可以方便的通过`dInfer_toolkit.py`进行SDK推送、数据推送、执行二进制程序、结果拉取、使用`sysmon profiler`分析系统资源等操作。
+
+## 支持平台
+
+目前以下平台支持`dInfer_toolkit.py`：
+
+- ANDROID
+- QCOM_LE
+- JETSON
+
+## 使用说明
+
+请使用`python >= 3.8`运行脚本
+
+```bash
+python /path/to/dInfer_toolkit.py --help
+usage: dInfer_toolkit.py [-h] [--adb ADB] [--sdk_path SDK_PATH] [--dev_tmp_path DEV_TMP_PATH] [--dev_sdcard_path DEV_SDCARD_PATH] [--result_path RESULT_PATH] [--push_data] [--push_sdk] [--push_lib]
+                         [--push_test] [--push_model] [--pull_result] [--args] [--nohup] [--sysmon_profiler] [--profiler_s PROFILER_S] [--push_bin] [--run ...] [--data_path DATA_PATH]
+                         [--model_path MODEL_PATH]
+
+dInfer Toolkit
+
+options:
+  -h, --help            show this help message and exit
+  --adb ADB             adb command
+  --sdk_path SDK_PATH   set sdk folder of specific platform in dInfer_out, eg: dInfer/dInfer_out/ANDROID
+  --dev_tmp_path DEV_TMP_PATH
+                        set tmp folder to save test,lib on device
+  --dev_sdcard_path DEV_SDCARD_PATH
+                        set sdcard folder to save model,testdata,config on device
+  --result_path RESULT_PATH
+                        set local result folder to save result data and log
+  --push_data           push test data to device
+  --push_sdk            push total sdk(dsp,lib,model,test) to device
+  --push_lib            push only lib and dsp to device
+  --push_test           DEPRECATED, please use --push_bin
+  --push_model          push only model to device
+  --pull_result         only pull result directory from device
+  --args                DEPRECATED, please use --run
+  --nohup               run gtest in background
+  --sysmon_profiler     use sysmonApp profiler
+  --profiler_s PROFILER_S
+                        sysmon profiler duration seconds
+  --push_bin            push only bin to device
+  --run ...             run bin on device, eg: "--run dInferTest --gtest_list_tests", or "--run dInferNetRun"
+  --data_path DATA_PATH
+                        set local data folder to save test data
+  --model_path MODEL_PATH
+                        set local model folder to save model
+```
+
+### 示例
+
+#### 推送SDK及测试数据
+
+```bash
+# 推送SDK及测试数据
+python /path/to/dInfer_toolkit.py --push_sdk --push_data
+
+# 仅推送SDK
+python /path/to/dInfer_toolkit.py --push_sdk
+
+# 仅推送测试数据
+python /path/to/dInfer_toolkit.py --push_data
+
+# 仅推送SDK中的库
+python /path/to/dInfer_toolkit.py --push_libs
+
+# 仅推送SDK中的可执行文件
+python /path/to/dInfer_toolkit.py --push_bin
+```
+
+#### 执行二进制程序
+
+```bash
+# 列出dInferTest测试用例
+python /path/to/dInfer_toolkit.py --run dInferTest --gtest_list_tests
+
+# 执行dInferTest全量测试
+python /path/to/dInfer_toolkit.py --run dInferTest
+
+# 执行dInferTest指定测试用例
+python /path/to/dInfer_toolkit.py --run dInferTest --gtest_filter=osal.*
+
+# 查看dInferNetRun帮助
+python /path/to/dInfer_toolkit.py --run dInferNetRunApp --help
+
+# 执行dInferNetRun
+python /path/to/dInfer_toolkit.py --run dInferNetRunApp
+
+```
+
+#### 使用`sysmon profiler`分析系统资源
+
+```bash
+# 使用sysmon profiler分析dInferNetRunApp
+python /path/to/dInfer_toolkit.py --sysmon_profiler --run dInferNetRunApp
+# 使用sysmon profiler分析dInferNetRunApp，并设置分析时长为20秒
+python /path/to/dInfer_toolkit.py --sysmon_profiler --profiler_s 20 --run dInferNetRunApp
+```

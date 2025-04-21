@@ -1,0 +1,151 @@
+# QNN高阶API V1使用
+
+**注意**：该页面仅适用于QNN2.29以下版本，QNN2.29起请使用[QNN高阶API V2](qnn_api_v2.md)
+
+QNN自定义属性配置通过optional_attrs进行配置，optional_attrs的配置有如下：
+
+- `qnn_serialize_path`:模型(.so)可读可写的路径，必须；  序列化文件(.seialized.bin)加载，不用使用这个路径；
+
+- `power_level`: （可选）QNN可配置的性能模式（PERFORMANCEv2、BALANCEDv2、POWER_SAVERv2）；若不进行配置，则由系统自动进行调整（不推荐）。
+
+   ```
+   注意：HIGH_PERFORMANCE、BALANCED、HIGH_POWER_SAVER 已弃用
+   ```
+
+- `qnn_load_from_cache`: （可选）QNN模型是否使用序列化文件（true, false）
+- `qnn_precision`: （可选）QNN模型是否是在某种运行时上运行的精度（目前仅支持HTPFP16：32位保存fp16位推理的so），该属性，设置graph_name是必须
+- `qnn_dlbc`: （可选）QNN模型是否是在HTP运行时上运行是否做DLBC网络带宽压缩（目前仅支持的so），该属性，设置graph_name时必须
+- `graph_name`: （可选）当模型进行一些高阶配置时候需要，需要与cpp中对应，getQnnGraphConfigFromInfo的第一个参数
+- `qnn_op_profiling`: （可选）在log中得到模型op每层耗时的profiling信息，如果不对模型进行profiling,则不配置此项，或者此项配置为"false"; 如果需要得到profiling信息，则此项配置为保存的csv的路径；如"/data/local/tmp/model.csv"
+- `qnn_singleton`: （可选）当用户不想自己显示释放qnn资源时，可以使用单例模式，进程退出时自动释放
+- `qnn_input_config`: （可选）针对HTP运行时，当用户输入要使用浮点，需要设置为"FLOAT_NATIVE"，框架完成输入的量化
+- `qnn_output_config`: （可选）针对HTP运行时，当用户输出要使用浮点，需要设置为"FLOAT_NATIVE"，框架完成输出的反量化
+
+   ```c++
+   // 示例
+   bool qnn_load_from_cache       = true;
+   std::string qnn_serialize_path = QNNMODELZOO_PATH;
+   std::string    power_level     = "HIGH_PERFORMANCE";
+   std::string    qnn_precision   = "HTPFP16";
+   std::string    graph_name      = "pole_20220923_960_720_version11_fp"; //refs to model.cpp
+   std::string  qnn_op_profiling  = "/data/local/tmp/model.csv";
+
+   std::map<std::string, void *> optional_attrs;
+   optional_attrs.insert({ "qnn_load_from_cache", &qnn_load_from_cache });
+   optional_attrs.insert({ "qnn_serialize_path", &qnn_serialize_path });
+   optional_attrs.insert({ "qnn_power_level", &power_level });
+   optional_attrs.insert({ "qnn_precision", &qnn_precision });
+   optional_attrs.insert({ "qnn_graph_name", &graph_name});
+   optional_attrs.insert({ "qnn_op_profiling",  &qnn_op_profiling });
+   ```
+
+- `qnn模型加密`：目前支持序列化文件(.seialized.bin)的加密，加解密和tflite等其他框架相同，加密脚本位于dInfer/tools/encrypt/main_encrypt_file.py，框架解密API使用：
+
+   ```c++
+   dInferModelInfo dInfer_model_info;
+   dInfer_model_info.model_encrypt  = true;
+   ```
+
+- `qnn共享内存`: 使用HTP后端时，增加选项"qnn_shared_buffer"以设置输入输出tensor的内存类型为共享内存。
+   - `tensor.data.host_addr`为共享内存地址，可供host端访问
+   - `tensor.data.device_addr`为fd（文件描述符），可供dsp访问
+   - 启用该选项时，用户应不应该修改`tensor.data`
+
+   ```c++
+   // 示例
+   dInferModelInfo info;
+   info.optional_attrs.insert({ "qnn_shared_buffer", nullptr /*该key可以为任意值*/});
+   ```
+
+- `qnn_power_config`: (可选)用户可以通过传递`dInferHtpPowerConfig*`指针自定义QNN HTP后端的详细功耗配置，所有字段都必须明确指定
+
+   ```c++
+   #include "dInfer/dInfer_adv_qnn.h"
+   // ...
+   dInferHtpPowerConfig power_cfg;
+   memset(&power_cfg, 0, sizeof(dInferHtpPowerConfig));
+   power_cfg.dcvsEnable = 1;
+   power_cfg.powerMode = DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_PERFORMANCE_MODE;
+   power_cfg.sleepLatency = 1000;
+   power_cfg.sleepDisable = 1;
+   power_cfg.busVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_cfg.busVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_cfg.busVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_cfg.coreVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_cfg.coreVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_cfg.coreVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_cfg.rpcControlLatency = 100;  // 0xffffffff表示不设置
+   power_cfg.rpcPollingTime = 9999;  // 0xffffffff表示不设置
+
+   // C++接口
+   dInferModelInfo info;
+   //...
+   info.optional_attrs.insert({"qnn_power_config", &power_cfg});
+   dInferInterface *infer = dInferInterfaceCreate(&info);
+   //...
+
+   // 纯C接口
+   dInferTensorInfo_C *tensor_info = new dInferTensorInfo_C;
+   dInferModelInfo_C cinfo;
+   //...
+   cinfo.optional_attrs_htp_power_cfg = &power_cfg;
+   void* cinfer = dInferInterfaceCreate_C(&cinfo, tensor_info);
+   //...
+   ```
+
+- `qnn_power_run_config&qnn_power_idle_config`: (可选)用户可以通过传递`dInferHtpPowerConfig*`指针自定义QNN HTP后端的详细功耗配置，所有字段都必须明确指定
+
+   ```c++
+   #include "dInfer/dInfer_adv_qnn.h"
+   // ...
+   dInferHtpPowerConfig power_run_cfg;
+   memset(&power_run_cfg, 0, sizeof(dInferHtpPowerConfig));
+   power_run_cfg.dcvsEnable = 1;
+   power_run_cfg.powerMode = DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_PERFORMANCE_MODE;
+   power_run_cfg.sleepLatency = 40;
+   power_run_cfg.sleepDisable = 1;
+   power_run_cfg.busVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_TURBO_L2;
+   power_run_cfg.busVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_TURBO_L2;
+   power_run_cfg.busVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_TURBO_L2;
+   power_run_cfg.coreVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_TURBO_L2;
+   power_run_cfg.coreVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_TURBO_L2;
+   power_run_cfg.coreVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_TURBO_L2;
+   power_run_cfg.rpcControlLatency = 100;  // 0xffffffff表示不设置
+   power_run_cfg.rpcPollingTime = 9999;  // 0xffffffff表示不设置
+
+   dInferHtpPowerConfig power_idle_cfg;
+   memset(&power_idle_cfg, 0, sizeof(dInferHtpPowerConfig));
+   power_idle_cfg.dcvsEnable = 1;
+   power_idle_cfg.powerMode = DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_PERFORMANCE_MODE;
+   power_idle_cfg.sleepLatency = 1000;
+   power_idle_cfg.sleepDisable = 1;
+   power_idle_cfg.busVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_idle_cfg.busVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_idle_cfg.busVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_idle_cfg.coreVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_idle_cfg.coreVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_idle_cfg.coreVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+   power_idle_cfg.rpcControlLatency = 100;  // 0xffffffff表示不设置
+   power_idle_cfg.rpcPollingTime = 9999;  // 0xffffffff表示不设置
+
+   // C++接口
+   dInferModelInfo info;
+   //...
+   info.optional_attrs.insert({"qnn_power_run_config", &power_run_cfg});
+   info.optional_attrs.insert({"qnn_power_idle_config", &power_idle_cfg});
+   dInferInterface *infer = dInferInterfaceCreate(&info);
+   //...
+
+   // 纯C接口
+   dInferTensorInfo_C *tensor_info = new dInferTensorInfo_C;
+   dInferModelInfo_C cinfo;
+   //...
+   cinfo.optional_attrs_htp_power_run_cfg = &power_run_cfg;
+   cinfo.optional_attrs_htp_power_idle_cfg = &power_idle_cfg;
+   void* cinfer = dInferInterfaceCreate_C(&cinfo, tensor_info);
+   //...
+   ```
+
+- `其他`：
+   - qnn日志由dInfer控制，通过`dInferInitLog(DINFER_LOG_DEBUG)`设置，如果需要详细qnn日志，请设置debug.
+

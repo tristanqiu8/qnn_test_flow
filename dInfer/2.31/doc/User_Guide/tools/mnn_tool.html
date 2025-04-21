@@ -1,0 +1,150 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MNN原生工具 &mdash; dInfer User Guide 0.0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=85179c66" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a0213dc"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="prev" title="dInfer模型运行工具" href="dInferNetRun.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dInfer User Guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/common_api.html">基本API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/common_api.html#tensor">获取Tensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/common_api.html#id5">性能统计</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/mnn_api.html">MNN高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/trt_api.html">TensorRT高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/qnn_api_v2.html">QNN高阶API V2使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/qnn_api.html">QNN高阶API V1使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/coreml_api.html">CoreML高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/paddle_lite_api.html">PaddleLite高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/tflite_api.html">TFLite高阶API使用</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dInfer_toolkit.html">dInfer工具箱</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dInferNetRun.html">dInfer模型运行工具</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MNN原生工具</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">使用说明</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">建议步骤</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dInfer User Guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">MNN原生工具</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tools/mnn_tool.md.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mnn">
+<h1>MNN原生工具<a class="headerlink" href="#mnn" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>使用说明<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>MNN官方说明：<a class="reference external" href="https://mnn-docs.readthedocs.io/en/latest/tools/test.html">MNN Docs - 测试工具</a></p>
+<p>必要的<code class="docutils literal notranslate"><span class="pre">binary</span></code>程序以及<code class="docutils literal notranslate"><span class="pre">python</span></code>脚本已经编译并打包到dInfer中，使用原生工具前，请将<code class="docutils literal notranslate"><span class="pre">${dInferSDK}/${PLATFORM}/bin/</span></code>路径加入到环境变量</p>
+<p>对于Windows PowerShell用户，请使用以下命令：</p>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="nv">$env:PATH</span> <span class="p">+=</span> <span class="s2">&quot;;${dInferSDK}/${PLATFORM}/bin&quot;</span>
+</pre></div>
+</div>
+<p>对于Linux用户，请使用以下命令：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">dInferSDK</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">PLATFORM</span><span class="si">}</span><span class="s2">/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>建议步骤<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>使用<a class="reference external" href="https://mnn-docs.readthedocs.io/en/latest/tools/convert.html">MNN Docs - 模型转换</a>中的<code class="docutils literal notranslate"><span class="pre">testMNNFromOnnx.py</span></code>脚本，一键进行模型转换&amp;CPU侧的正确性验证，正确性验证出错时通过<a class="reference external" href="https://mnn-docs.readthedocs.io/en/latest/tools/convert.html#id6">MNN Docs - 模型转换 - 出错及解决</a>进一步分析</p></li>
+<li><p>使用<a class="reference external" href="https://mnn-docs.readthedocs.io/en/latest/tools/test.html#modulebasic-out">ModuleBasic工具</a>中的<code class="docutils literal notranslate"><span class="pre">ModuleBasic.out</span></code>工具，进行特定后端配置的性能评估，例如<code class="docutils literal notranslate"><span class="pre">CUDA</span></code>后端、不同精度、内存、功耗模式等</p></li>
+<li><p>若希望进一步验证一致性，可使用<a class="reference external" href="https://mnn-docs.readthedocs.io/en/latest/tools/test.html#checkfile-out">checkFile.out工具</a>和<a class="reference external" href="https://mnn-docs.readthedocs.io/en/latest/tools/test.html#checkdir-out">checkDir.out工具</a>检查生成的<code class="docutils literal notranslate"><span class="pre">txt</span></code>文件，也可以将<code class="docutils literal notranslate"><span class="pre">txt</span></code>文件通过<code class="docutils literal notranslate"><span class="pre">np.loadtxt()</span></code>读取通过python进一步处理。</p></li>
+<li><p>若希望进一步分析算子耗时，可设置<a class="reference external" href="https://mnn-docs.readthedocs.io/en/latest/tools/test.html#modulebasic-out">ModuleBasic</a>工具的<code class="docutils literal notranslate"><span class="pre">runMask</span></code>参数为<code class="docutils literal notranslate"><span class="pre">4</span></code>，以打印算子耗时。对于CPU后端，也可以使用<a class="reference external" href="https://mnn-docs.readthedocs.io/en/latest/tools/test.html#timeprofile-out">timeProfile工具</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="dInferNetRun.html" class="btn btn-neutral float-left" title="dInfer模型运行工具" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022-2030, DJI。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

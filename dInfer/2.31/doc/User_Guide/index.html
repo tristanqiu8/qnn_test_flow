@@ -1,0 +1,264 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dInfer User Guide &mdash; dInfer User Guide 0.0.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=85179c66" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5a0213dc"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=beaddf03"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="基本API使用" href="api/common_api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            dInfer User Guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/common_api.html">基本API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/common_api.html#tensor">获取Tensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/common_api.html#id5">性能统计</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/mnn_api.html">MNN高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/trt_api.html">TensorRT高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/qnn_api_v2.html">QNN高阶API V2使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/qnn_api.html">QNN高阶API V1使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/coreml_api.html">CoreML高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/paddle_lite_api.html">PaddleLite高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/tflite_api.html">TFLite高阶API使用</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tools/dInfer_toolkit.html">dInfer工具箱</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools/dInferNetRun.html">dInfer模型运行工具</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools/mnn_tool.html">MNN原生工具</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">dInfer User Guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">dInfer User Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dinfer-user-guide">
+<h1>dInfer User Guide<a class="headerlink" href="#dinfer-user-guide" title="Link to this heading"></a></h1>
+<section id="what-is-dinfer">
+<h2>What is dInfer?<a class="headerlink" href="#what-is-dinfer" title="Link to this heading"></a></h2>
+<p>dInfer是机器学习公版推理库，集成主流三方推理框架，对业务方提供统一的模型推理API以及评估工具。</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">已集成的三方推理框架</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>作者</p></th>
+<th class="head"><p>推理框架</p></th>
+<th class="head"><p>来源</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Alibaba</p></td>
+<td><p>MNN</p></td>
+<td><p><a class="reference external" href="https://github.com/alibaba/MNN">https://github.com/alibaba/MNN</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Qualcomm</p></td>
+<td><p>QNN</p></td>
+<td><p><a class="reference external" href="https://qpm.qualcomm.com/#/main/tools/details/QPM3">https://qpm.qualcomm.com/#/main/tools/details/QPM3</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Apple</p></td>
+<td><p>CoreML</p></td>
+<td><p><a class="reference external" href="https://developer.apple.com/cn/documentation/coreml/">https://developer.apple.com/cn/documentation/coreml/</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Google</p></td>
+<td><p>TFLite</p></td>
+<td><p><a class="reference external" href="https://github.com/tensorflow/tensorflow">https://github.com/tensorflow/tensorflow</a></p></td>
+</tr>
+<tr class="row-even"><td><p>PaddlePaddle</p></td>
+<td><p>PaddleLite</p></td>
+<td><p><a class="reference external" href="https://github.com/PaddlePaddle/Paddle-Lite">https://github.com/PaddlePaddle/Paddle-Lite</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="toctree-wrapper compound" id="api-usage">
+<p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/common_api.html">基本API使用</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/common_api.html#mnn">MNN</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/common_api.html#c-api-demo">C++ API Demo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/common_api.html#id1">C API Demo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/common_api.html#tensorrt">TensorRT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/common_api.html#id2">C++ API Demo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/common_api.html#qnn">QNN</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/common_api.html#id3">C++ API Demo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/common_api.html#id4">C API Demo</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/common_api.html#tensor">获取Tensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/common_api.html#id5">性能统计</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/mnn_api.html">MNN高阶API使用</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/mnn_api.html#id1">调度配置选项</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/mnn_api.html#id2">调度配置</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/mnn_api.html#id3">后端配置</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/mnn_api.html#fallback">关于fallback逻辑</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/mnn_api.html#id4">已弃用选项</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/trt_api.html">TensorRT高阶API使用</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/trt_api.html#id1">模型缓存</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/trt_api.html#trt-cache-path-const-char"><code class="docutils literal notranslate"><span class="pre">trt_cache_path</span></code>选项，类型：<code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/qnn_api_v2.html">QNN高阶API V2使用</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/qnn_api_v2.html#id1">模型加载方式</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/qnn_api_v2.html#id2">从模型库加载</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/qnn_api_v2.html#id3">从模型缓存加载</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/qnn_api_v2.html#qnn">QNN日志等级</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/qnn_api_v2.html#qnn-log-level-dinferloglevel"><code class="docutils literal notranslate"><span class="pre">qnn_log_level</span></code>选项，类型：<code class="docutils literal notranslate"><span class="pre">dInferLogLevel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/qnn_api_v2.html#id4">设备签名</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/qnn_api_v2.html#qnn-signed-pd-bool"><code class="docutils literal notranslate"><span class="pre">qnn_signed_pd</span></code>选项，类型：<code class="docutils literal notranslate"><span class="pre">bool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/qnn_api_v2.html#fae">附：高通FAE提供的设备签名方法</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/qnn_api_v2.html#id5">功耗配置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/qnn_api_v2.html#qnn-power-config-dinferhtppowerconfig"><code class="docutils literal notranslate"><span class="pre">qnn_power_config</span></code>选项，类型：<code class="docutils literal notranslate"><span class="pre">dInferHtpPowerConfig*</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/qnn_api_v2.html#id6">常用功耗配置参考</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/qnn_api_v2.html#v1">功耗配置（兼容v1）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/qnn_api_v2.html#qnn-power-level-string"><code class="docutils literal notranslate"><span class="pre">qnn_power_level</span></code>选项，类型：<code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">*</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/qnn_api_v2.html#qnn-power-level-c-const-char"><code class="docutils literal notranslate"><span class="pre">qnn_power_level_c</span></code>选项，类型：<code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">char*</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/qnn_api_v2.html#id7">共享内存</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/qnn_api_v2.html#qnn-shared-buffer-bool"><code class="docutils literal notranslate"><span class="pre">qnn_shared_buffer</span></code>选项，类型：<code class="docutils literal notranslate"><span class="pre">bool</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/qnn_api.html">QNN高阶API V1使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/coreml_api.html">CoreML高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/paddle_lite_api.html">PaddleLite高阶API使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/tflite_api.html">TFLite高阶API使用</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound" id="tools">
+<p class="caption" role="heading"><span class="caption-text">API使用指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tools/dInfer_toolkit.html">dInfer工具箱</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools/dInfer_toolkit.html#id1">支持平台</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/dInfer_toolkit.html#id2">使用说明</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tools/dInfer_toolkit.html#id3">示例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools/dInferNetRun.html">dInfer模型运行工具</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools/dInferNetRun.html#id1">使用方法</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/dInferNetRun.html#id2">场景配置说明</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tools/dInferNetRun.html#id3">场景配置格式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tools/dInferNetRun.html#id4">场景配置示例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tools/dInferNetRun.html#id5">常用测试步骤</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/dInferNetRun.html#id6">输出结果示例</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools/mnn_tool.html">MNN原生工具</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools/mnn_tool.html#id1">使用说明</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools/mnn_tool.html#id2">建议步骤</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="api/common_api.html" class="btn btn-neutral float-right" title="基本API使用" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022-2030, DJI。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

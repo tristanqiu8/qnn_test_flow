@@ -1,0 +1,120 @@
+[
+    {
+        "scene_name": "water_mnn_demo",
+        "description": "用于演示MNN单模型性能评估, 使用OpenCL后端，备选后端也为OpenCL以确保不会fallback, GPU Tuning模式为16(MNN_GPU_TUNING_FAST), 并指定内存、功耗、精度配置",
+        "idle_s": 5,
+        "run_s": 60,
+        "warmup_s": 5,
+        "tasks": [
+            {
+                "task_name": "water",
+                "model_path": "/sdcard/gtest/dInfer/model/water.mnn",
+                "encrypted": false,
+                "engine": "MNN",
+                "device": "GPU",
+                "fps_limit": 30,
+                "pre_delay_ms": 0,
+                "timeout_ms": 15,
+                "optional_attrs": {
+                    "mnn_schedule_config": {
+                        "type": "MNN_FORWARD_OPENCL",
+                        "backupType": "MNN_FORWARD_OPENCL",
+                        "mode": 16,
+                        "backendConfig": {
+                            "memory": "Memory_Normal",
+                            "power": "Power_Normal",
+                            "precision": "Precision_Normal"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "scene_name": "denoise_qnn_demo",
+        "description": "用于演示QNN单模型性能评估",
+        "idle_s": 5,
+        "run_s": 60,
+        "warmup_s": 5,
+        "tasks": [
+            {
+                "task_name": "denoise",
+                "model_path": "model/denoise_229_htp_vtcm8mb.serialized.bin",
+                "encrypted": false,
+                "engine": "QNN",
+                "device": "HTP",
+                "fps_limit": 30,
+                "pre_delay_ms": 0,
+                "timeout_ms": 15,
+                "optional_attrs": {
+                    "qnn_load_from_cache": true,
+                    "qnn_shared_buffer": true,
+                    "qnn_log_level": "WARNING",
+                    "qnn_power_config": {
+                        "dcvsEnable": true,
+                        "powerMode": "POWER_SAVER_MODE",
+                        "sleepLatency": 40,
+                        "sleepDisable": true,
+                        "busVoltageCornerMin": "NOM",
+                        "busVoltageCornerTarget": "NOM",
+                        "busVoltageCornerMax": "NOM",
+                        "coreVoltageCornerMin": "NOM",
+                        "coreVoltageCornerTarget": "NOM",
+                        "coreVoltageCornerMax": "NOM"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "scene_name": "water_trt_demo",
+        "description": "用于演示TRT单模型性能评估",
+        "idle_s": 5,
+        "run_s": 60,
+        "warmup_s": 5,
+        "tasks": [
+            {
+                "task_name": "water",
+                "model_path": "model/water.onnx",
+                "encrypted": false,
+                "engine": "TRT",
+                "device": "GPU",
+                "fps_limit": 30,
+                "pre_delay_ms": 0,
+                "timeout_ms": 0,
+                "optional_attrs": {
+                    "trt_cache_path": "model/water.trtModel"
+                }
+            }
+        ]
+    },
+    {
+        "scene_name": "detection_reid",
+        "description": "MACLEARN-16872 用于分析全景TK链路在某些机型上detection和reid超时问题，detection @ 30 Hz，reid @ 3 Hz * 5 Objects",
+        "idle_s": 5,
+        "run_s": 60,
+        "warmup_s": 10,
+        "tasks": [
+            {
+                "task_name": "detection",
+                "model_path": "model/det_coco.tflite",
+                "encrypted": false,
+                "engine": "TFLITE",
+                "device": "GPU",
+                "fps_limit": 30,
+                "pre_delay_ms": 0,
+                "timeout_ms": 0
+            },
+            {
+                "task_name": "reid",
+                "model_path": "model/person_reid.tflite",
+                "encrypted": false,
+                "engine": "TFLITE",
+                "device": "GPU",
+                "fps_limit": 15,
+                "pre_delay_ms": 0,
+                "timeout_ms": 0
+            }
+        ]
+    }
+]

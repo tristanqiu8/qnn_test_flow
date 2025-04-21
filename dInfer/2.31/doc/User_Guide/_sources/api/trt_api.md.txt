@@ -1,0 +1,37 @@
+# TensorRT高阶API使用
+
+## 模型缓存
+
+TRT可以在首次初始化后，将模型序列化到指定路径，后续加载时直接加载模型缓存，从而加速初始化。
+
+模型缓存的兼容性与TensorRT版本、GPU SM Version有关。若软硬件环境完全一致（如EA700），则可以复用模型缓存。
+
+#### `trt_cache_path`选项，类型：`const char *`
+
+示例：
+
+```c++
+#include "dInfer/dInfer_api.h"
+
+TEST(trt_runtime, basic_demo) {
+    // 1. 配置模型信息
+    dInferModelInfo info;
+    info.device = dInferDevice::DINFER_GPU;
+    info.runtime = dInferEngine::DINFER_TRT;
+    info.model_path = "/path/to/model.onnx";
+    info.model_encrypt = false;
+    // 设置模型缓存以加速初始化
+    const char *trt_cache_path = "/path/to/model.trtModel";
+    info.optional_attrs["trt_cache_path"] = (void*)trt_cache_path;
+
+    // 2. 创建dInfer实例
+    std::shared_ptr<dInferInterface> infer(dInferInterfaceCreate(&info), [](dInferInterface* p) {
+        // 7. 释放资源
+        EXPECT_EQ(dInferInterfaceDestroy(p), DINFER_OK);
+    });
+    ASSERT_NE(infer, nullptr);
+
+    // 3. 前处理、推理、后处理
+    ...
+}
+```

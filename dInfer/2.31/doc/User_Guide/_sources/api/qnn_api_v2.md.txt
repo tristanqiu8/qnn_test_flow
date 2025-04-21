@@ -1,0 +1,576 @@
+# QNN高阶API V2使用
+
+**注意**：适用于QNN2.29及以上版本
+
+## 模型加载方式
+
+QNN模型可以指定从模型库或模型缓存加载。
+
+### 从模型库加载
+
+从模型库加载可以在运行时指定图配置，包括图优化等级、使能DLBC、精度、VTCM Size、线程数等。
+
+由于compose和finalize在设备端完成，所以兼容性较好，可以在不同的HTP版本上使用，但也会导致首次加载较慢。
+
+由于模型库无法通过buffer方式加载，因此需要使用`qnn_lib_cache_path`或`qnn_serialize_path`选项指定模型库缓存路径，用于保存解密的库文件，这个路径必须是可读写可执行的。
+
+首次加载完成后，会将序列化模型缓存到该路径中，后续加载时则会直接加载模型缓存。模型缓存文件名格式为`${sha1sum}.serialized.bin`。
+
+#### `qnn_lib_cache_path`选项，类型：`const char *`
+
+示例：
+
+```c++
+#include "dInfer/dInfer_api.h"
+
+TEST(qnn_runtime, basic_demo) {
+    // 1. 配置模型信息
+    dInferModelInfo info;
+    info.device = dInferDevice::DINFER_HTP;
+    info.runtime = dInferEngine::DINFER_QNN;
+    info.model_path = "/path/to/libmodel.so";
+    info.model_encrypt = false;
+    // 加载【模型库】时，需要指定该选项保存解密后的模型库，请确保可读写可执行。
+    const char *qnn_lib_cache_path = "/data/local/tmp/";
+    info.optional_attrs["qnn_lib_cache_path"] = (void*)qnn_lib_cache_path;
+
+    // 2. 创建dInfer实例
+    std::shared_ptr<dInferInterface> infer(dInferInterfaceCreate(&info), [](dInferInterface* p) {
+        // 4. 释放资源
+        EXPECT_EQ(dInferInterfaceDestroy(p), DINFER_OK);
+    });
+    ASSERT_NE(infer, nullptr);
+
+    // 3. 前处理、推理、后处理
+    ...
+}
+```
+
+#### `qnn_serialize_path`选项，类型：`string *`（兼容V1 API）
+
+示例：
+
+```c++
+#include "dInfer/dInfer_api.h"
+
+TEST(qnn_runtime, basic_demo_v1_compatible) {
+
+    // 1. 配置模型信息
+    dInferModelInfo info;
+    info.device = dInferDevice::DINFER_HTP;
+    info.runtime = dInferEngine::DINFER_QNN;
+    info.model_path = "/path/to/libmodel.so";
+    info.model_encrypt = false;
+    // 加载【序列化模型】时，需要指定该选项保存解密后的模型库，由于是指针传递，使用时请注意变量生存期。
+    string qnn_serialize_path = "/data/local/tmp/";
+    info.optional_attrs["qnn_serialize_path"] = &qnn_serialize_path;
+
+    // 2. 创建dInfer实例
+    std::shared_ptr<dInferInterface> infer(dInferInterfaceCreate(&info), [](dInferInterface* p) {
+        // 4. 释放资源
+        EXPECT_EQ(dInferInterfaceDestroy(p), DINFER_OK);
+    });
+    ASSERT_NE(infer, nullptr);
+
+    // 3. 前处理、推理、后处理
+    ...
+}
+```
+
+
+
+### 从模型缓存加载
+
+从模型缓存加载，可以在离线阶段确定图优化等级、VTCM Size、线程数等，节省在线模型初始化时间，但在线加载时这些参数就无法改变了。
+
+由于在离线阶段已经完成了compose和finalize，所以可以跨不同AP侧环境，即Linux模拟器、Android、LE可以共用同一份模型缓存，只要他们使用的HTP后端相同。
+
+需要通过`qnn_load_from_cache`选项指定加载方式为模型缓存：
+
+#### `qnn_load_from_cache`选项，类型：`bool*`
+
+示例：
+
+```c++
+#include "dInfer/dInfer_api.h"
+
+TEST(qnn_runtime, serialzied_model_demo) {
+
+    // 1.配置模型信息
+    dInferModel info;
+    info.device = dInferDevice::DINFER_HTP;
+    info.runtime = dInferEngine::DINFER_QNN;
+    info.model_path = "/path/to/model.serialized.bin";
+    info.model_encrypt = false;
+    // 加载【序列化模型】时，需要指定该选项，由于是指针传递，使用时请注意变量生存期。
+    bool load_from_cache = true;
+    info.optional_attrs["qnn_load_from_cache"] = &load_from_cache;
+
+    // 2. 创建dInfer实例
+    std::shared_ptr<dInferInterface> infer(dInferInterfaceCreate(&info), [](dInferInterface* p) {
+        // 4. 释放资源
+        EXPECT_EQ(dInferInterfaceDestroy(p), DINFER_OK);
+    });
+    ASSERT_NE(infer, nullptr);
+
+    // 3. 前处理、推理、后处理
+    ...
+}
+
+```
+
+## QNN日志等级
+
+`dInfer`和`QNN`的日志等级映射如下：
+
+| QNN | dInfer |
+|--|--|
+|`QNN_LOG_LEVEL_ERROR`|`DINFER_LOG_ERROR`|
+|`QNN_LOG_LEVEL_WARN`|`DINFER_LOG_WARNIING`|
+|`QNN_LOG_LEVEL_INFO`|`DINFER_LOG_INFO`|
+|`QNN_LOG_LEVEL_VERBOSE`|`DINFER_LOG_DEBUG`|
+|`QNN_LOG_LEVEL_DEBUG`|`DINFER_LOG_DEBUG`|
+
+默认情况下，QNN的日志等级将与创建dInfer示例时的dInfer日志等级保持一致。如果用户希望指定QNN日志等级，可以使用`qnn_log_level`选项
+
+#### `qnn_log_level`选项，类型：`dInferLogLevel`
+
+```c++
+#include "dInfer/dInfer_api.h"
+
+TEST(qnn_runtime, log_level_demo) {
+
+    // 1. 配置模型信息
+    dInferModelInfo info;
+    info.device = dInferDevice::DINFER_HTP;
+    info.runtime = dInferEngine::DINFER_QNN;
+    info.model_path = "/path/to/model.serialized.bin";
+    info.model_encrypt = false;
+
+    // 指定QNN日志等级
+    info.optional_attrs["qnn_log_level"] = (void*)dInferLogLevel::DINFER_LOG_WARNIING;
+
+    // 2. 创建dInfer实例
+    std::shared_ptr<dInferInterface> infer(dInferInterfaceCreate(&info), [](dInferInterface* p) {
+        // 4. 释放资源
+        EXPECT_EQ(dInferInterfaceDestroy(p), DINFER_OK);
+    });
+    ASSERT_NE(infer, nullptr);
+
+    // 3. 前处理、推理、后处理
+    ...
+}
+```
+
+## 设备签名
+
+QNN SDK中提供的库是未签名的，产品发布时需要使用设备签名过的库以提高安全性。QNN加载签名库时，需要添加HTP设备配置以启用签名进程域（Signed Process Domain）。
+
+详细信息可参考：[QNN HTP Backend API](https://docs.qualcomm.com/bundle/publicresource/topics/80-63442-50/htp_backend.html)以及`${Hexagon_SDK}/docs/software/system_integration.html#signed-pds`
+
+**注意：在同一进程中，只有第一次创建的QNN模型的qnn_signed_pd会生效，后续创建的QNN模型的qnn_signed_pd会被忽略。**
+
+使用`qnn_signed_pd`选项启用签名进程域：
+
+#### `qnn_signed_pd`选项，类型：`bool`
+
+```c++
+#include "dInfer/dInfer_api.h"
+
+TEST(qnn_runtime, signed_pd_demo) {
+
+    // 1. 配置模型信息
+    dInferModelInfo info;
+    info.device = dInferDevice::DINFER_HTP;
+    info.runtime = dInferEngine::DINFER_QNN;
+    info.model_path = "/path/to/model.serialized.bin";
+    info.model_encrypt = false;
+
+    // 启用签名进程域
+    info.optional_attrs["qnn_signed_pd"] = (void*)true;
+
+    // 2. 创建dInfer实例
+    std::shared_ptr<dInferInterface> infer(dInferInterfaceCreate(&info), [](dInferInterface* p) {
+        // 4. 释放资源
+        EXPECT_EQ(dInferInterfaceDestroy(p), DINFER_OK);
+    });
+    ASSERT_NE(infer, nullptr);
+
+    // 3. 前处理、推理、后处理
+    ...
+}
+```
+
+#### 附：高通FAE提供的设备签名方法
+
+```
+Detail to sign the device:
+Please sign the device manually.
+1. Please get the serial number by:
+    1. Command: adb shell cat /sys/devices/soc0/serial_number
+    2. Example: 305419896
+2. The result is decimal, you should convert it to hexadecimal.
+    1. Example: 305419896 is 0x12345678
+3. Get the signed testsig-***.so
+    1. mkdir output
+    2. {Hexagon_SDK}\tools\elfsigner\elfsigner.py -t {hexadecimal serial number} -o output
+    3. Example:  C:\Qualcomm\Hexagon_SDK\3.4.3\tools\elfsigner\elfsigner.py -t 0x12345678 -o output
+4. Find the rfsa folder:
+    1. adb shell ls /vendor/lib/rfsa/adsp
+    2. adb shell ls /system/lib/rfsa/adsp
+    3. adb shell ls /dsp
+5. Push it to the rfsa folder:
+    1. Push it to the first fold you found in above command.
+    2. Example: adb push output/testsig-0x12345678.so /vendor/lib/rfsa/adsp/
+```
+
+## 功耗配置
+
+QNN支持通过[QNN HTP Performance Infrastructure API](https://docs.qualcomm.com/bundle/publicresource/topics/80-63442-50/htp_backend.html#qnn-htp-performance-infrastructure-api)配置CPU和HTP的系统设置以平衡性能和功耗。
+
+关于高通Hexagon DSP的投票机制详细说明，以及多个`Power Client`同时投票时的投票聚合策略，请参考`${HEXAGON_SDK}/docs/doxygen/HAP_power/index.html`或参考[QNN 功耗优化 - Confluence(圈内)](https://confluence-rd.djicorp.com/pages/viewpage.action?pageId=1418371567)。通常投票聚合是性能优先的。
+
+用户可以通过`qnn_power_config`选项自定义QNN HTP后端的详细功耗配置，所有字段都必须明确指定。
+
+#### `qnn_power_config`选项，类型：`dInferHtpPowerConfig*`
+
+使用该选项，会在dInfer实例初始化时进行一次投票配置，然后持续生效，在dInfer实例销毁时销毁对应的配置ID。
+
+示例：
+
+```c++
+#include "dInfer/dInfer_api.h"
+#include "dInfer/dInfer_adv_qnn.h"
+
+TEST(qnn_runtime, power_config_demo) {
+    // ...
+    dInferHtpPowerConfig_t power_cfg;
+    memset(&power_cfg, 0, sizeof(dInferHtpPowerConfig));
+    power_cfg.dcvsEnable = 1;
+    power_cfg.powerMode = DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_PERFORMANCE_MODE;
+    power_cfg.sleepLatency = 1000;
+    power_cfg.sleepDisable = 1;
+    power_cfg.busVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+    power_cfg.busVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+    power_cfg.busVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+    power_cfg.coreVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+    power_cfg.coreVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+    power_cfg.coreVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+    power_cfg.rpcControlLatency = 100;  // 0xffffffff表示不设置
+    power_cfg.rpcPollingTime = 9999;  // 0xffffffff表示不设置
+
+    dInferModelInfo info;
+    //...
+    info.optional_attrs["qnn_power_config"] = &power_cfg;
+    dInferInterface *infer = dInferInterfaceCreate(&info);
+    //...
+}
+```
+
+#### 常用功耗配置参考
+
+以下功耗配置名称来自[QNN高阶API](qnn_api.md)，在此列出方便参考：
+
+```c++
+// PERFORMANCEv2
+dInferHtpPowerConfig_t power_cfg;
+memset(&power_cfg, 0, sizeof(dInferHtpPowerConfig));
+power_cfg.dcvsEnable = 1;
+power_cfg.powerMode = DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_DUTY_CYCLE_MODE;
+power_cfg.sleepLatency = 1000;
+power_cfg.sleepDisable = 1;
+power_cfg.busVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_SVS2;
+power_cfg.busVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM_PLUS;
+power_cfg.busVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_TURBO;
+power_cfg.coreVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_SVS2;
+power_cfg.coreVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM_PLUS;
+power_cfg.coreVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_TURBO;
+power_cfg.rpcControlLatency = 100;
+power_cfg.rpcPollingTime = 9999;
+
+// BALANCEDv2
+dInferHtpPowerConfig_t power_cfg;
+memset(&power_cfg, 0, sizeof(dInferHtpPowerConfig));
+power_cfg.dcvsEnable = 1;
+power_cfg.powerMode = DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_DUTY_CYCLE_MODE;
+power_cfg.sleepLatency = 1000;
+power_cfg.sleepDisable = 1;
+power_cfg.busVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_SVS2;
+power_cfg.busVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+power_cfg.busVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+power_cfg.coreVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_SVS2;
+power_cfg.coreVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+power_cfg.coreVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+power_cfg.rpcControlLatency = 0xffffffff;
+power_cfg.rpcPollingTime = 0xffffffff;
+
+// POWER_SAVER_V2
+dInferHtpPowerConfig_t power_cfg;
+memset(&power_cfg, 0, sizeof(dInferHtpPowerConfig));
+power_cfg.dcvsEnable = 1;
+power_cfg.powerMode = DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_POWER_SAVER_MODE;
+power_cfg.sleepLatency = 40;
+power_cfg.sleepDisable = 0;
+power_cfg.busVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_SVS2;
+power_cfg.busVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_TURBO;
+power_cfg.busVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_TURBO;
+power_cfg.coreVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_SVS2;
+power_cfg.coreVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_TURBO;
+power_cfg.coreVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_TURBO;
+power_cfg.rpcControlLatency = 0xffffffff;
+power_cfg.rpcPollingTime = 0xffffffff;
+
+// HIGH_PERFORMANCE
+dInferHtpPowerConfig_t power_cfg;
+memset(&power_cfg, 0, sizeof(dInferHtpPowerConfig));
+power_cfg.dcvsEnable = 0;
+power_cfg.powerMode = DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_PERFORMANCE_MODE;
+power_cfg.sleepLatency = 40;
+power_cfg.sleepDisable = 1;
+power_cfg.busVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER;
+power_cfg.busVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER;
+power_cfg.busVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER;
+power_cfg.coreVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER;
+power_cfg.coreVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER;
+power_cfg.coreVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER;
+power_cfg.rpcControlLatency = 100;
+power_cfg.rpcPollingTime = 9999;
+
+// BALANCED
+dInferHtpPowerConfig_t power_cfg;
+memset(&power_cfg, 0, sizeof(dInferHtpPowerConfig));
+power_cfg.dcvsEnable = 1;
+power_cfg.powerMode = DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_POWER_SAVER_MODE;
+power_cfg.sleepLatency = 40;
+power_cfg.sleepDisable = 1;
+power_cfg.busVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+power_cfg.busVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+power_cfg.busVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+power_cfg.coreVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+power_cfg.coreVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+power_cfg.coreVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_NOM;
+power_cfg.rpcControlLatency = 0xffffffff;
+power_cfg.rpcPollingTime = 0xffffffff;
+
+// HIGH_POWER_SAVER
+dInferHtpPowerConfig_t power_cfg;
+memset(&power_cfg, 0, sizeof(dInferHtpPowerConfig));
+power_cfg.dcvsEnable = 1;
+power_cfg.powerMode = DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_POWER_SAVER_MODE;
+power_cfg.sleepLatency = 40;
+power_cfg.sleepDisable = 0;
+power_cfg.busVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER;
+power_cfg.busVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER;
+power_cfg.busVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER;
+power_cfg.coreVoltageCornerMin = DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER;
+power_cfg.coreVoltageCornerTarget = DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER;
+power_cfg.coreVoltageCornerMax = DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER;
+power_cfg.rpcControlLatency = 0xffffffff;
+power_cfg.rpcPollingTime = 0xffffffff;
+
+```
+
+## 功耗配置（兼容v1）
+
+已弃用，主要用于兼容[v1 API](qnn_api.md)，请优先使用`qnn_power_config`选项
+
+#### `qnn_power_level`选项，类型：`string *`
+
+取值范围：`PERFORMANCEv2`/`BALANCEDv2`/`POWER_SAVER_V2`/`HIGH_PERFORMANCE`/`BALANCED`/`HIGH_PERFORMANCE`
+
+示例：
+
+```c++
+#include "dInfer/dInfer_api.h"
+#include "dInfer/dInfer_adv_qnn.h"
+#include <string>
+
+using namespace std;
+
+TEST(qnn_runtime, power_level_demo) {
+    // ...
+
+    dInferModelInfo info;
+    //...
+    string power_level = "BALANCEDv2";
+    info.optional_attrs["qnn_power_level"] = &power_level;
+    dInferInterface *infer = dInferInterfaceCreate(&info);
+    //...
+}
+```
+
+具体配置参考：
+
+```c++
+const map<string, dInferHtpPowerConfig_t> qnn_power_level_map = {
+    {"PERFORMANCEv2", {
+        1,
+        DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_DUTY_CYCLE_MODE,
+        1000,
+        1,
+        DINFER_DCVS_VOLTAGE_VCORNER_SVS2,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM_PLUS,
+        DINFER_DCVS_VOLTAGE_VCORNER_TURBO,
+        DINFER_DCVS_VOLTAGE_VCORNER_SVS2,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM_PLUS,
+        DINFER_DCVS_VOLTAGE_VCORNER_TURBO,
+        100,
+        9999,
+    }},
+    {"BALANCEDv2", {
+        1,
+        DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_DUTY_CYCLE_MODE,
+        1000,
+        1,
+        DINFER_DCVS_VOLTAGE_VCORNER_SVS2,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM,
+        DINFER_DCVS_VOLTAGE_VCORNER_SVS2,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM,
+        0xffffffff,
+        0xffffffff,
+    }},
+    {"POWER_SAVER_V2", {
+        1,
+        DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_POWER_SAVER_MODE,
+        40,
+        0,
+        DINFER_DCVS_VOLTAGE_VCORNER_SVS2,
+        DINFER_DCVS_VOLTAGE_VCORNER_TURBO,
+        DINFER_DCVS_VOLTAGE_VCORNER_TURBO,
+        DINFER_DCVS_VOLTAGE_VCORNER_SVS2,
+        DINFER_DCVS_VOLTAGE_VCORNER_TURBO,
+        DINFER_DCVS_VOLTAGE_VCORNER_TURBO,
+        0xffffffff,
+        0xffffffff,
+    }},
+    {"HIGH_PERFORMANCE", {
+        0,
+        DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_PERFORMANCE_MODE,
+        40,
+        1,
+        DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER,
+        DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER,
+        DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER,
+        DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER,
+        DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER,
+        DINFER_DCVS_VOLTAGE_VCORNER_MAX_VOLTAGE_CORNER,
+        100,
+        9999,
+    }},
+    {"BALANCED", {
+        1,
+        DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_POWER_SAVER_MODE,
+        40,
+        1,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM,
+        DINFER_DCVS_VOLTAGE_VCORNER_NOM,
+        0xffffffff,
+        0xffffffff,
+    }},
+    {"HIGH_PERFORMANCE", {
+        1,
+        DINFER_HTP_PERF_INFRASTRUCTURE_POWERMODE_POWER_SAVER_MODE,
+        40,
+        0,
+        DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER,
+        DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER,
+        DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER,
+        DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER,
+        DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER,
+        DINFER_DCVS_VOLTAGE_VCORNER_MIN_VOLTAGE_CORNER,
+        0xffffffff,
+        0xffffffff,
+    }},
+};
+```
+
+#### `qnn_power_level_c`选项，类型：`const char*`
+
+主要用于C API的适配，取值及具体配置同`qnn_power_level`
+
+C用户请使用`dInferModelInfo_t`的`optional_attrs_pl`成员。
+
+示例：
+
+```c
+#include "dInfer/dInfer_api_c.h"
+#include "dInfer/dInfer_adv_qnn.h"
+
+TEST(qnn_runtime, power_level_c_demo) {
+    // ...
+
+    // 配置模型信息
+    dInferModelInfo_t model_info;
+    memset(&model_info, 0, sizeof(dInferModelInfo_t));
+    model_info.runtime = "QNN"; // TODO: 目前无法选择device, 固定为HTP。
+    model_info.model_path = (char*)model_bin_file.c_str();
+    model_info.model_encrypt = false;
+    model_info.optional_attrs_ql = true; // 加载【序列化模型】时，需要设置该选项。
+    model_info.optional_attrs_pl = "PERFORMANCEv2"; // 指定功耗配置
+
+    // dInferTensorInfo_t ...
+    // dInferInterfaceCreate ...
+}
+```
+
+## 共享内存
+
+#### `qnn_shared_buffer`选项，类型：`bool`
+
+该选项设置为`true`时设置输入输出Tensor的内存类型为共享内存，以实现DSP前后处理与NN推理之间的**零拷贝**。共享内存由dInfer内部分配和管理。
+
+用户可以通过两种方式访问共享内存:
+
+- `dInferTensor.data.host_addr`：共享内存地址，可供AP侧访问
+- `dInferTensor.data.device_addr`：共享内存的文件描述符（fd），可供DSP侧访问
+
+示例：
+
+```c++
+
+#include "dInfer/dInfer_api.h"
+
+TEST(qnn_runtime, shared_buffer_demo) {
+    // ...
+
+    dInferModelInfo info;
+    // ...
+    info.optional_attrs["qnn_shared_buffer"] = (void*)true;
+    dInferInterface *infer = dInferInterfaceCreate(&info);
+
+    // 获取输入
+    dInferTensor *input_tensor = infer->GetTensor("input_1");
+    EXPECT_EQ(input_tensor->data.type, dInferMemType::DINFER_MEM_SHARED_BUF);
+    EXPECT_NE(input_tensor->data.host_addr, nullptr);
+    EXPECT_NE(input_tensor->data.device_addr, -1);
+    EXPECT_NE(input_tensor->data.size, 0);
+    void *input_buffer = input_tensor->data.host_addr;  // AP侧访问
+    int32_t input_fd = (int32_t)input_tensor->data.device_addr;  // DSP侧访问
+    size_t input_buffer_size = input_tensor->data.size;
+
+    // DSP前处理可直接写入input_fd，以实现零拷贝
+    // ...
+
+    // 推理
+    EXPECT_EQ(infer->Process(), DINFER_OK);
+
+    // 获取输出
+    dInferTensor *output_tensor = infer->GetTensor("output_1");
+    EXPECT_EQ(output_tensor->data.type, dInferMemType::DINFER_MEM_SHARED_BUF);
+    EXPECT_NE(output_tensor->data.host_addr, nullptr);
+    EXPECT_NE(output_tensor->data.device_addr, -1);
+    EXPECT_NE(output_tensor->data.size, 0);
+    void *output_buffer = output_tensor->data.host_addr;  // AP侧访问
+    int32_t output_fd = (int32_t)output_tensor->data.device_addr;  // DSP侧访问
+    size_t output_buffer_size = output_tensor->data.size;
+
+    // DSP后处理可直接读取output_fd，以实现零拷贝
+    // ...
+}
+```

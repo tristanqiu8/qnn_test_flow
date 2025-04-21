@@ -98,7 +98,6 @@ def run(args):
                     os.system(cmd)
                 # stage 2: clang and generate .so
                 model_bin_path  = os.path.abspath(os.path.join(model_dir, bin_fname))
-                # import pdb; pdb.set_trace()
                 os.system("qnn-model-lib-generator -c " + cpp_path + " -b " +  model_bin_path + " -o " + model_dir)
                 # stage 3: serialized
                 model_lib_fname = "lib" + model_name + ".so"
@@ -152,6 +151,7 @@ def main():
     parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
     parser.add_argument("--batch", help="change batch size", type=int, default=2)
     parser.add_argument("--pm", help="power mode", default="burst")
+    parser.add_argument("--profile", help="profile or not", default=False)
     args = parser.parse_args()
     run(args)
 

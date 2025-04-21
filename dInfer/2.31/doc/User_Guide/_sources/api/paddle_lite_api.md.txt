@@ -1,0 +1,13 @@
+# PaddleLite高阶API使用
+
+PaddleLite自定义属性配置通过optional_attrs进行配置，optional_attrs的配置有如下：
+
+- `number_thread`: （可选）默认值为4.
+- `power`:（可选）电量模式, 默认为3  0: LITE_POWER_HIGH; 1: LITE_POWER_LOW; 2: LITE_POWER_FULL; 3: LITE_POWER_NO_BIND; 4: LITE_POWER_RAND_HIGH; 5: LITE_POWER_RAND_LOW
+- `using_model_cache`: (可选) 是否保存model cached 到文件中，下一次使用时使用model cached。
+
+   ```c++
+   std::map<std::string, void *> optional_attrs = {
+      std::make_pair<std::string, void *>("number_thread", reinterpret_cast<void *>(2))
+   };
+   ```
