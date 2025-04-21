@@ -6,11 +6,6 @@ import onnxruntime as ort
 from onnxruntime.datasets import get_example
 
 
-# def init():  # step 0: initialize a qnn sdk environment
-#     # QNN_SDK_ROOT is preset in ~/.bashrc
-#     os.system("source $QNN_SDK_ROOT/init.sh")
-
-
 def test(args):
     if not os.path.exists(args.out_dir):
         os.mkdir(args.out_dir)
@@ -25,36 +20,6 @@ def test(args):
     for root, dirnames, filenames in os.walk(args.in_dir):
         for filename in filenames:
             model_found = False
-            if filename.endswith("prototxt"):
-                encoding_found = False
-                proto_path = os.path.abspath(os.path.join(root, filename))
-                expect_param_path = proto_path.split(".")[0] + ".caffemodel"
-                # out_onnx_path = proto_path.split(".")[0] + ".onnx"
-                if not os.path.exists(expect_param_path):
-                    print(expect_param_path + " is not found! Current test skip")
-                    continue
-                model_name = filename.split(".")[0]
-                # print("Running model: " + model_name)
-                
-                # step 1: convert caffe to onnx
-                model_dir = os.path.abspath(os.path.join(args.out_dir, model_name))
-                if not os.path.exists(model_dir):
-                    os.mkdir(model_dir)
-                onnx_tmp_path = os.path.abspath(os.path.join(model_dir, model_name + "_tmp.onnx"))
-                onnx_path = os.path.abspath(os.path.join(model_dir, model_name + ".onnx"))
-                ret = os.system("/home/tritan/anaconda3/envs/qnn/bin/python" + " -m caffe2onnx.convert"
-                           + " --prototxt " + proto_path + " --caffemodel " + expect_param_path
-                           + " --onnx " + onnx_tmp_path)
-                if ret:
-                    print("caffe2onnx for case " + model_name + " failed! Skip the test")
-                    continue
-                ret = os.system("/home/tritan/anaconda3/envs/qnn/bin/python remove_initializer_from_input.py --input "
-                                + onnx_tmp_path + " --output " + onnx_path)
-                if ret:
-                    print("remove_initializer_from_input for case " + model_name + " failed! Skip the test")
-                    continue
-                os.remove(onnx_tmp_path)
-                model_found = True
                 
             if filename.endswith("onnx"):
                 model_name = filename.split(".")[0]
@@ -166,13 +131,12 @@ def test(args):
 
 def main():
     parser = ap.ArgumentParser()
-    parser.add_argument("--in_dir", help='target test case dir (Caffe)', required=True)
+    parser.add_argument("--in_dir", help='target test case dir (ONNX)', required=True)
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
     parser.add_argument("--app", help="test run app", default="qnn-max100-app")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
     args = parser.parse_args()
-    # init()
     test(args)
 
 
