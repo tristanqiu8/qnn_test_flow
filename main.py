@@ -4,6 +4,7 @@ import json
 import numpy as np
 import onnxruntime as ort
 from onnxruntime.datasets import get_example
+import subprocess
 
 
 def init():
@@ -57,17 +58,25 @@ def run(args):
                 input_shape = sess.get_inputs()[0].shape
                 input_name = sess.get_inputs()[0].name
                 print("onnx input shape", input_shape)
-                if args.batch != 1:
+                if args.batch != input_shape[0]:
                     input_shape[0] = args.batch
                 print("new input shape", input_shape)
-                x = np.random.random(input_shape)
-                x = x.astype(np.float32)
-                raw_input_path = os.path.abspath(os.path.join(model_dir, model_name + "_input.raw"))
+
+                if args.fxp == "i8":
+                    x = np.random.randint(-128, 127, size=input_shape).astype(np.int8)
+                elif args.fxp == "i16":
+                    x = np.random.randint(-128, 127, size=input_shape).astype(np.int16)
+                elif args.fxp == "fp16":
+                    x = np.random.randn(input_shape).astype(np.float16)
+                input_file = f"{input_shape[0]}x{input_shape[1]}x{input_shape[2]}x{input_shape[3]}_{args.fxp}.raw"
+                raw_input_path = os.path.abspath(os.path.join(model_dir, input_file))
                 x.tofile(raw_input_path)
                 input_list_path = os.path.join(model_dir, model_name + "_input_list.txt")
                 pc_input_list_path = os.path.join(model_dir, model_name + "_pc_input_list.txt")
                 f = open(input_list_path, 'w')
-                f.write("/data/local/tmp/model/" + model_name + "_input.raw")
+                if args.app == "qnn-net-run":
+                    qnn_test_dir = "/data/local/tmp/qnn_test_231/"
+                    f.write(qnn_test_dir + input_file)
                 f.close()
                 f = open(pc_input_list_path, 'w')
                 f.write(raw_input_path)
@@ -124,9 +133,25 @@ def run(args):
                 )
                 print("qnn-context-binary-generator cmd is: ", cmd)
                 os.system(cmd)
-                os.chdir(cur_dir)
+                # os.chdir(cur_dir)
 
-                # step 4: push to the pdb
+                # step 4: execute the model
+                if args.app == "qnn-net-run":
+                    print("run qnn-net-run")
+                    cmd = f"adb push {binary_fname}.bin {qnn_test_dir}."
+                    subprocess.run([cmd], capture_output=True, shell=True, check=True, text=True)
+                    cmd = f"adb push {input_file} {qnn_test_dir}."
+                    subprocess.run([cmd], capture_output=True, shell=True, check=True, text=True)
+                    cmd = f"adb push {input_list_path} {qnn_test_dir}."
+                    subprocess.run([cmd], capture_output=True, shell=True, check=True, text=True)
+                    cmd = f"adb push htp_extension.json {qnn_test_dir}."
+                    subprocess.run([cmd], capture_output=True, shell=True, check=True, text=True)
+                    cmd = f"adb push vtcm_config.json {qnn_test_dir}."
+                    subprocess.run([cmd], capture_output=True, shell=True, check=True, text=True)
+                elif args.app == "dInfer":
+                    print("run dInfer")
+                else:
+                    print("run profiler")
                 # os.environ['MODEL_LIB'] = lib_dir
                 # os.environ['MODEL_DIR'] = model_dir
                 # os.environ['MODEL_NAME'] = model_name
@@ -145,13 +170,12 @@ def main():
     parser = ap.ArgumentParser()
     parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./depthwise")
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
-    parser.add_argument("--app", help="test run app", default="qnn-net-run")
+    parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, or profiler", default="qnn-net-run")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
     parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
-    parser.add_argument("--batch", help="change batch size", type=int, default=2)
+    parser.add_argument("--batch", help="change batch size", type=int, default=1)
     parser.add_argument("--pm", help="power mode", default="burst")
-    parser.add_argument("--profile", help="profile or not", default=False)
     args = parser.parse_args()
     run(args)
 
