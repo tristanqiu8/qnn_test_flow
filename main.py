@@ -137,7 +137,8 @@ def run(args):
 
                 # step 4: execute the model
                 if args.app == "qnn-net-run":
-                    print("run qnn-net-run")
+                    print("qnn-net-run test mode:")
+                    print("prepare the case")
                     cmd = f"adb push {binary_fname}.bin {qnn_test_dir}."
                     subprocess.run([cmd], capture_output=True, shell=True, check=True, text=True)
                     cmd = f"adb push {input_file} {qnn_test_dir}."
@@ -148,6 +149,62 @@ def run(args):
                     subprocess.run([cmd], capture_output=True, shell=True, check=True, text=True)
                     cmd = f"adb push vtcm_config.json {qnn_test_dir}."
                     subprocess.run([cmd], capture_output=True, shell=True, check=True, text=True)
+                    print("run qnn-net-run")
+                    # 构造完整的命令字符串
+                    command = (
+                        f"adb shell '"
+                        f"cd {qnn_test_dir} && "
+                        f"export LD_LIBRARY_PATH=./ && "
+                        f"export ADSP_LIBRARY_PATH=./ && "
+                        f"./qnn-net-run --retrieve_context {binary_fname}.bin --backend libQnnHtp.so --input_list {model_name}_input_list.txt "
+                        f"--use_native_input_files --output_dir {model_name}_dump "
+                        f"--log_level error --config_file htp_extension.json --profiling_level basic "
+                        f"--perf_profile {args.pm} --shared_buffer --duration {args.runtime}"
+                        "'"
+                    )
+
+                    # 执行命令
+                    result = subprocess.run(
+                        command,
+                        capture_output=True,  # 捕获标准输出和标准错误
+                        shell=True,           # 使用 shell 执行命令
+                        check=True,           # 如果命令返回非零退出码，则抛出异常
+                        text=True             # 将输出作为字符串返回
+                    )
+
+                    # 输出结果
+                    print("STDOUT:", result.stdout)
+                    print("STDERR:", result.stderr)
+                    print("collecting result:")
+                    # 第一步：运行 qnn-profile-viewer 并将输出重定向到文件
+                    command1 = (
+                        f"adb shell '"
+                        f"cd {qnn_test_dir} && "
+                        f"export LD_LIBRARY_PATH=./ && "
+                        f"export ADSP_LIBRARY_PATH=./ && "
+                        f"./qnn-profile-viewer --input_log {model_name}_dump/qnn-profiling-data.log > {model_name}_profiling.txt"
+                        "'"
+                    )
+                    result = subprocess.run(
+                        command1,
+                        capture_output=True,  # 捕获标准输出和标准错误
+                        shell=True,           # 使用 shell 执行命令
+                        check=True,           # 如果命令返回非零退出码，则抛出异常
+                        text=True             # 将输出作为字符串返回
+                    )
+                    print("STDOUT:", result.stdout)
+                    print("STDERR:", result.stderr)
+                    # 第二步：从设备拉取生成的 profiling 文件
+                    command2 = f"adb pull {qnn_test_dir}/{model_name}_profiling.txt {model_dir}/."
+                    subprocess.run(
+                        command2,
+                        capture_output=True,  # 捕获标准输出和标准错误
+                        shell=True,           # 使用 shell 执行命令
+                        check=True,           # 如果命令返回非零退出码，则抛出异常
+                        text=True             # 将输出作为字符串返回
+                    )
+                    print("STDOUT:", result.stdout)
+                    print("STDERR:", result.stderr)
                 elif args.app == "dInfer":
                     print("run dInfer")
                 else:
@@ -175,6 +232,7 @@ def main():
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
     parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
     parser.add_argument("--batch", help="change batch size", type=int, default=1)
+    parser.add_argument("--runtime", help="# seconds to run", type=int, default=30)
     parser.add_argument("--pm", help="power mode", default="burst")
     args = parser.parse_args()
     run(args)
