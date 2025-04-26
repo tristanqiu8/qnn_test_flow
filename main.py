@@ -6,6 +6,8 @@ import onnxruntime as ort
 from onnxruntime.datasets import get_example
 import subprocess
 
+soc_mapping = {"v73": 43, "v75": 57, "v79": 69}
+qnn_test_dir = "/data/local/tmp/qnn_test_233/"
 
 def init():
     os.system("source /home/tristan/.bashrc")
@@ -27,6 +29,8 @@ def run(args):
     with open(default_conf_path, 'r') as load_f:
         json_cfg_dict =json.load(load_f)
     load_f.close()
+    json_cfg_dict['devices'][0]['dsp_arch'] = args.arch
+    json_cfg_dict['devices'][0]['soc_id'] = soc_mapping[args.arch]
 
     for root, dirnames, filenames in os.walk(args.in_dir):
         for filename in filenames:
@@ -65,7 +69,7 @@ def run(args):
                 if args.fxp == "i8":
                     x = np.random.randint(-128, 127, size=input_shape).astype(np.int8)
                 elif args.fxp == "i16":
-                    x = np.random.randint(-128, 127, size=input_shape).astype(np.int16)
+                    x = np.random.randint(-32768, 32767, size=input_shape).astype(np.int16)
                 elif args.fxp == "fp16":
                     x = np.random.randn(input_shape).astype(np.float16)
                 input_file = f"{input_shape[0]}x{input_shape[1]}x{input_shape[2]}x{input_shape[3]}_{args.fxp}.raw"
@@ -75,7 +79,6 @@ def run(args):
                 pc_input_list_path = os.path.join(model_dir, model_name + "_pc_input_list.txt")
                 f = open(input_list_path, 'w')
                 if args.app == "qnn-net-run":
-                    qnn_test_dir = "/data/local/tmp/qnn_test_231/"
                     f.write(qnn_test_dir + input_file)
                 f.close()
                 f = open(pc_input_list_path, 'w')
@@ -225,7 +228,7 @@ def run(args):
 
 def main():
     parser = ap.ArgumentParser()
-    parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./depthwise")
+    parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./nafnet_block")
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
     parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, or profiler", default="qnn-net-run")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
@@ -233,8 +236,10 @@ def main():
     parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
     parser.add_argument("--batch", help="change batch size", type=int, default=1)
     parser.add_argument("--runtime", help="# seconds to run", type=int, default=30)
+    parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v73')
     parser.add_argument("--pm", help="power mode", default="burst")
     args = parser.parse_args()
+    init()
     run(args)
 
 
