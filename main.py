@@ -15,9 +15,9 @@ def init():
 def run(args):
     if not os.path.exists(args.out_dir):
         os.mkdir(args.out_dir)
-    else:  # whether remove evethings in the out_dir
-        shutil.rmtree(args.out_dir)
-        os.mkdir(args.out_dir)
+    # else:  # whether remove evethings in the out_dir
+    #     shutil.rmtree(args.out_dir)
+    #     os.mkdir(args.out_dir)
     
     if args.fxp == "i8" or "i16":
         default_conf_path = './conf/vtcm_config_i8.json'
@@ -39,10 +39,13 @@ def run(args):
             if filename.endswith("onnx"):
                 model_name = filename.split(".")[0]
                 model_path = os.path.abspath(os.path.join(root, filename))
-                model_dir = os.path.abspath(os.path.join(args.out_dir, f"{model_name}_{args.pm}_{args.fxp}_B{args.batch}"))
+                model_dir = os.path.abspath(os.path.join(args.out_dir, f"{model_name}_{args.pm}_{args.fxp}_B{args.batch}_{args.app}"))
                 encoding_name = model_name + ".encodings"
                 encoding_path = os.path.abspath(os.path.join(root, encoding_name))
                 if not os.path.exists(model_dir):
+                    os.mkdir(model_dir)
+                else:  # whether remove evethings in the out_dir
+                    shutil.rmtree(model_dir)
                     os.mkdir(model_dir)
                 onnx_path = os.path.abspath(os.path.join(model_dir, model_name + ".onnx"))
                 os.system("cp " + model_path + " " + onnx_path)
@@ -206,7 +209,7 @@ def run(args):
                     print("STDERR:", result.stderr)
                     # 第二步：从设备拉取生成的 profiling 文件
                     command2 = f"adb pull {qnn_test_dir}/{model_name}_profiling.txt {model_dir}/."
-                    subprocess.run(
+                    result = subprocess.run(
                         command2,
                         capture_output=True,  # 捕获标准输出和标准错误
                         shell=True,           # 使用 shell 执行命令
@@ -259,7 +262,7 @@ def run(args):
                     print("STDOUT:", result.stdout)
                     print("STDERR:", result.stderr)
                     print("collecting result:")
-                    command1 = f"adb pull {qnn_test_dir}/{model_name}_dump {model_dir}/."
+                    command1 = f"adb pull {qnn_test_dir}/{model_name}_dump/qnn-profiling-data_0.log {model_dir}/."
                     result = subprocess.run(
                         command1,
                         capture_output=True,  # 捕获标准输出和标准错误
@@ -272,7 +275,7 @@ def run(args):
                     command2 = (
                                f"qnn-profile-viewer --config ../../conf/config.json "
                                f"--reader $QNN_SDK_ROOT/lib/x86_64-linux-clang/libQnnHtpOptraceProfilingReader.so "
-                               f"--input_log {model_name}_dump/qnn-profiling-data_0.log "
+                               f"--input_log qnn-profiling-data_0.log "
                                f"--schematic ./*_schematic.bin --output ./chrometrace.json"
                                )
                     print("qnn-profile-viewer cmd is: ", command2)
@@ -284,7 +287,8 @@ def run(args):
                         text=True             # 将输出作为字符串返回
                     )
                     print("STDOUT:", result.stdout)
-                    print("STDERR:", result.stderr)
+                    if result.stderr:
+                        print("STDERR:", result.stderr)
 
 
 def main():
@@ -294,8 +298,8 @@ def main():
     parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, or profiler", default="profiler")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
-    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
-    parser.add_argument("--batch", help="change batch size", type=int, default=1)
+    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="fp16")
+    parser.add_argument("--batch", help="change batch size", type=int, default=2)
     parser.add_argument("--runtime", help="# seconds to run", type=int, default=10)
     parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v79')
     parser.add_argument("--pm", help="power mode", default="burst")
