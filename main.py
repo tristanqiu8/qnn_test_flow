@@ -7,18 +7,36 @@ from onnxruntime.datasets import get_example
 import subprocess
 
 soc_mapping = {"v73": 43, "v75": 57, "v79": 69}
-qnn_test_dir = "/data/local/tmp/qnn_test_231/"
+qnn_test_dir_v73 = "/data/local/tmp/qnn_test_233/"
+qnn_test_dir_v79 = "/data/local/tmp/qnn_test_233/"
 
 def init():
     os.system("source /home/tristan/.bashrc")
 
+def sys_call(cmd):
+    result = subprocess.run(
+                        cmd,
+                        capture_output=True,  # 捕获标准输出和标准错误
+                        shell=True,           # 使用 shell 执行命令
+                        check=True,           # 如果命令返回非零退出码，则抛出异常
+                        text=True             # 将输出作为字符串返回
+                    )
+    if result.stdout:
+        print("STDOUT:", result.stdout)
+    if result.stderr:
+        print("STDERR:", result.stderr)
+
 def run(args):
     if not os.path.exists(args.out_dir):
         os.mkdir(args.out_dir)
-    # else:  # whether remove evethings in the out_dir
-    #     shutil.rmtree(args.out_dir)
-    #     os.mkdir(args.out_dir)
-    
+
+    if args.arch == "v73":
+        qnn_test_dir = qnn_test_dir_v73
+    elif args.arch == "v79":
+        qnn_test_dir = qnn_test_dir_v79
+    else:
+        assert False, "arch not supported"
+
     if args.fxp == "i8" or "i16":
         default_conf_path = './conf/vtcm_config_i8.json'
     elif args.fxp == "fp16":
@@ -49,7 +67,7 @@ def run(args):
                     shutil.rmtree(model_dir)
                     os.mkdir(model_dir)
                 onnx_path = os.path.abspath(os.path.join(model_dir, model_name + ".onnx"))
-                os.system("cp " + model_path + " " + onnx_path)
+                sys_call("cp " + model_path + " " + onnx_path)
                 stat_file = os.path.abspath(os.path.join(model_dir, model_name + "_macs.txt"))
                 # 捕获 stdout
                 old_stdout = sys.stdout
@@ -109,7 +127,6 @@ def run(args):
                 cpp_fname = model_name + ".cpp"
                 bin_fname = model_name + ".bin"
                 cpp_path = os.path.abspath(os.path.join(model_dir, cpp_fname))
-                # os.system("source $QNN_SDK_ROOT/target/x86_64-linux-clang/bin/envsetup.sh")
                 if encoding_found:
                     if args.fxp == "i8" or args.fxp == "i16":
                         cmd = (
@@ -131,10 +148,12 @@ def run(args):
                             f" --input_dim {input_name} {input_shape[0]},{input_shape[1]},{input_shape[2]},{input_shape[3]}"
                         )
                 print(f"onnx conversion cmd is: {cmd}")
-                os.system(cmd)
+                sys_call(cmd)
                 # stage 2: clang and generate .so
                 model_bin_path  = os.path.abspath(os.path.join(model_dir, bin_fname))
-                os.system("qnn-model-lib-generator -c " + cpp_path + " -b " +  model_bin_path + " -o " + model_dir)
+                cmd = "qnn-model-lib-generator -c " + cpp_path + " -b " +  model_bin_path + " -o " + model_dir
+                print("qnn-model-lib-generator cmd is: ", cmd)
+                os.system(cmd)
                 # stage 3: serialized
                 model_lib_fname = "lib" + model_name + ".so"
                 binary_fname = "lib_" + model_name
@@ -166,12 +185,12 @@ def run(args):
                         f"--output_dir {model_dir} --config_file htp_extension.json"
                     )
                 print("qnn-context-binary-generator cmd is: ", cmd)
-                os.system(cmd)
+                sys_call(cmd)
                 # os.chdir(cur_dir)
 
                 # step 4: execute the model
                 if args.app == "qnn-net-run":
-                    print("qnn-net-run test mode:")
+                    print("qnn-net-run test mode...")
                     print("prepare the case")
                     cmd = f"adb push {binary_fname}.bin {qnn_test_dir}."
                     subprocess.run([cmd], capture_output=True, shell=True, check=True, text=True)
@@ -199,18 +218,8 @@ def run(args):
                     )
 
                     # 执行命令
-                    result = subprocess.run(
-                        command,
-                        capture_output=True,  # 捕获标准输出和标准错误
-                        shell=True,           # 使用 shell 执行命令
-                        check=True,           # 如果命令返回非零退出码，则抛出异常
-                        text=True             # 将输出作为字符串返回
-                    )
-
-                    # 输出结果
-                    print("STDOUT:", result.stdout)
-                    print("STDERR:", result.stderr)
-                    print("collecting result:")
+                    sys_call(command)
+                    print("collecting result...")
                     # 第一步：运行 qnn-profile-viewer 并将输出重定向到文件
                     command1 = (
                         f"adb shell '"
@@ -221,31 +230,15 @@ def run(args):
                         f"./qnn-profile-viewer --input_log {model_name}_dump/qnn-profiling-data.log > {model_name}_profiling.txt"
                         "'"
                     )
-                    result = subprocess.run(
-                        command1,
-                        capture_output=True,  # 捕获标准输出和标准错误
-                        shell=True,           # 使用 shell 执行命令
-                        check=True,           # 如果命令返回非零退出码，则抛出异常
-                        text=True             # 将输出作为字符串返回
-                    )
-                    print("STDOUT:", result.stdout)
-                    print("STDERR:", result.stderr)
+                    sys_call(command1)
                     # 第二步：从设备拉取生成的 profiling 文件
                     command2 = f"adb pull {qnn_test_dir}/{model_name}_profiling.txt {model_dir}/."
-                    result = subprocess.run(
-                        command2,
-                        capture_output=True,  # 捕获标准输出和标准错误
-                        shell=True,           # 使用 shell 执行命令
-                        check=True,           # 如果命令返回非零退出码，则抛出异常
-                        text=True             # 将输出作为字符串返回
-                    )
-                    print("STDOUT:", result.stdout)
-                    print("STDERR:", result.stderr)
+                    sys_call(command2)
                 elif args.app == "dInfer":
                     print("run dInfer")
                 else:
-                    print("run profiler")
-                    print("qnn-net-run test mode:")
+                    print("run profiler!")
+                    print("qnn-net-run test mode...")
                     print("prepare the case")
                     cmd = f"adb push {binary_fname}.bin {qnn_test_dir}."
                     subprocess.run([cmd], capture_output=True, shell=True, check=True, text=True)
@@ -273,28 +266,10 @@ def run(args):
                     )
 
                     # 执行命令
-                    result = subprocess.run(
-                        command,
-                        capture_output=True,  # 捕获标准输出和标准错误
-                        shell=True,           # 使用 shell 执行命令
-                        check=True,           # 如果命令返回非零退出码，则抛出异常
-                        text=True             # 将输出作为字符串返回
-                    )
-
-                    # 输出结果
-                    print("STDOUT:", result.stdout)
-                    print("STDERR:", result.stderr)
-                    print("collecting result:")
+                    sys_call(command)
+                    print("collecting result...")
                     command1 = f"adb pull {qnn_test_dir}/{model_name}_dump/qnn-profiling-data_0.log {model_dir}/."
-                    result = subprocess.run(
-                        command1,
-                        capture_output=True,  # 捕获标准输出和标准错误
-                        shell=True,           # 使用 shell 执行命令
-                        check=True,           # 如果命令返回非零退出码，则抛出异常
-                        text=True             # 将输出作为字符串返回
-                    )
-                    print("STDOUT:", result.stdout)
-                    print("STDERR:", result.stderr)
+                    sys_call(command1)
                     command2 = (
                                f"qnn-profile-viewer --config ../../conf/config.json "
                                f"--reader $QNN_SDK_ROOT/lib/x86_64-linux-clang/libQnnHtpOptraceProfilingReader.so "
@@ -302,29 +277,20 @@ def run(args):
                                f"--schematic ./*_schematic.bin --output ./chrometrace.json"
                                )
                     print("qnn-profile-viewer cmd is: ", command2)
-                    result = subprocess.run(
-                        command2,
-                        capture_output=True,  # 捕获标准输出和标准错误
-                        shell=True,           # 使用 shell 执行命令
-                        check=True,           # 如果命令返回非零退出码，则抛出异常
-                        text=True             # 将输出作为字符串返回
-                    )
-                    print("STDOUT:", result.stdout)
-                    if result.stderr:
-                        print("STDERR:", result.stderr)
+                    sys_call(command2)
 
 
 def main():
     parser = ap.ArgumentParser()
-    parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./raw2rgb/base")
+    parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./nafnet_block")
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
     parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, or profiler", default="qnn-net-run")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
-    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
+    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="fp16")
     parser.add_argument("--batch", help="change batch size", type=int, default=2)
     parser.add_argument("--runtime", help="# seconds to run", type=int, default=30)
-    parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v79')
+    parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v73')
     parser.add_argument("--pm", help="power mode", default="burst")
     args = parser.parse_args()
     init()
