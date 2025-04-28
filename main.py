@@ -8,7 +8,7 @@ import subprocess
 
 soc_mapping = {"v73": 43, "v75": 57, "v79": 69}
 qnn_test_dir_v73 = "/data/local/tmp/qnn_test_233/"
-qnn_test_dir_v79 = "/data/local/tmp/qnn_test_233/"
+qnn_test_dir_v79 = "/data/local/tmp/qnn_test_231/"
 
 def init():
     os.system("source /home/tristan/.bashrc")
@@ -19,6 +19,7 @@ def sys_call(cmd):
                         capture_output=True,  # 捕获标准输出和标准错误
                         shell=True,           # 使用 shell 执行命令
                         check=True,           # 如果命令返回非零退出码，则抛出异常
+                        timeout=200, 
                         text=True             # 将输出作为字符串返回
                     )
     if result.stdout:
@@ -287,8 +288,8 @@ def main():
     parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, or profiler", default="qnn-net-run")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
-    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="fp16")
-    parser.add_argument("--batch", help="change batch size", type=int, default=2)
+    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
+    parser.add_argument("--batch", help="change batch size", type=int, default=4)
     parser.add_argument("--runtime", help="# seconds to run", type=int, default=30)
     parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v73')
     parser.add_argument("--pm", help="power mode", default="burst")
