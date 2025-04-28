@@ -1,4 +1,4 @@
-import os, shutil
+import os, shutil, sys, io
 import argparse as ap
 import json
 import numpy as np
@@ -37,6 +37,7 @@ def run(args):
             model_found = False
                 
             if filename.endswith("onnx"):
+                import onnx_tool
                 model_name = filename.split(".")[0]
                 model_path = os.path.abspath(os.path.join(root, filename))
                 model_dir = os.path.abspath(os.path.join(args.out_dir, f"{model_name}_{args.pm}_{args.fxp}_B{args.batch}_{args.app}"))
@@ -49,6 +50,21 @@ def run(args):
                     os.mkdir(model_dir)
                 onnx_path = os.path.abspath(os.path.join(model_dir, model_name + ".onnx"))
                 os.system("cp " + model_path + " " + onnx_path)
+                stat_file = os.path.abspath(os.path.join(model_dir, model_name + "_macs.txt"))
+                # 捕获 stdout
+                old_stdout = sys.stdout
+                sys.stdout = captured_output = io.StringIO()
+
+                # 执行 profiling
+                stats = onnx_tool.model_profile(model_path)
+
+                # 恢复 stdout
+                sys.stdout = old_stdout
+
+                # 将捕获的输出写入文件
+                with open(stat_file, "w") as f:
+                    f.write(captured_output.getvalue())
+
                 model_found = True
                 if os.path.exists(encoding_path):
                     encoding_found = True
@@ -65,8 +81,8 @@ def run(args):
                 input_shape = sess.get_inputs()[0].shape
                 input_name = sess.get_inputs()[0].name
                 print("onnx input shape", input_shape)
-                if args.batch != input_shape[0]:
-                    input_shape[0] = args.batch
+                if args.batch != 1:
+                    input_shape[0] = args.batch * input_shape[0]
                 print("new input shape", input_shape)
 
                 if args.fxp == "i8":
@@ -95,9 +111,14 @@ def run(args):
                 cpp_path = os.path.abspath(os.path.join(model_dir, cpp_fname))
                 # os.system("source $QNN_SDK_ROOT/target/x86_64-linux-clang/bin/envsetup.sh")
                 if encoding_found:
-                    os.system("qnn-onnx-converter --input_network " + onnx_path + " --output_path " 
-                                + cpp_path + " --input_list " + pc_input_list_path +
-                                " --quantization_overrides " + encoding_path + " --arch_checker")
+                    if args.fxp == "i8" or args.fxp == "i16":
+                        cmd = (
+                                f"qnn-onnx-converter --input_network {onnx_path} --input_list {pc_input_list_path} --output_path {cpp_path} "
+                                f"--quantization_overrides {encoding_path} --input_dim {input_name} {input_shape[0]},{input_shape[1]},{input_shape[2]},{input_shape[3]}"
+                        )
+                    else:
+                        print("fp16 not supported for encoding")
+                        exit(-1)
                 else:
                     if args.fxp == "i8" or args.fxp == "i16":
                         cmd = (
@@ -109,8 +130,8 @@ def run(args):
                             f"qnn-onnx-converter --input_network {onnx_path} --output_path {cpp_path} --float_bitwidth 16"
                             f" --input_dim {input_name} {input_shape[0]},{input_shape[1]},{input_shape[2]},{input_shape[3]}"
                         )
-                    print(f"onnx conversion cmd is: {cmd}")
-                    os.system(cmd)
+                print(f"onnx conversion cmd is: {cmd}")
+                os.system(cmd)
                 # stage 2: clang and generate .so
                 model_bin_path  = os.path.abspath(os.path.join(model_dir, bin_fname))
                 os.system("qnn-model-lib-generator -c " + cpp_path + " -b " +  model_bin_path + " -o " + model_dir)
@@ -169,10 +190,11 @@ def run(args):
                         f"cd {qnn_test_dir} && "
                         f"export LD_LIBRARY_PATH=./ && "
                         f"export ADSP_LIBRARY_PATH=./ && "
+                        f"rm -rf {model_name}_dump && "
                         f"./qnn-net-run --retrieve_context {binary_fname}.bin --backend libQnnHtp.so --input_list {model_name}_input_list.txt "
                         f"--use_native_input_files --output_dir {model_name}_dump "
                         f"--log_level error --config_file htp_extension.json --profiling_level basic "
-                        f"--perf_profile {args.pm} --shared_buffer --duration {args.runtime}"
+                        f"--perf_profile {args.pm} --shared_buffer --duration {args.runtime} --keep_num_outputs=2"
                         "'"
                     )
 
@@ -195,6 +217,7 @@ def run(args):
                         f"cd {qnn_test_dir} && "
                         f"export LD_LIBRARY_PATH=./ && "
                         f"export ADSP_LIBRARY_PATH=./ && "
+                        f"rm -rf {model_name}_profiling.txt && "
                         f"./qnn-profile-viewer --input_log {model_name}_dump/qnn-profiling-data.log > {model_name}_profiling.txt"
                         "'"
                     )
@@ -245,7 +268,7 @@ def run(args):
                         f"./qnn-net-run --retrieve_context {binary_fname}.bin --backend libQnnHtp.so --input_list {model_name}_input_list.txt "
                         f"--use_native_input_files --output_dir {model_name}_dump --log_level info "
                         f"--config_file htp_extension.json --profiling_level detailed --profiling_option optrace "
-                        f"--perf_profile {args.pm} --shared_buffer --duration {args.runtime}"
+                        f"--perf_profile {args.pm} --shared_buffer --duration {args.runtime} --keep_num_outputs=2"
                         "'"
                     )
 
@@ -293,14 +316,14 @@ def run(args):
 
 def main():
     parser = ap.ArgumentParser()
-    parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./nafnet_block")
+    parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./raw2rgb/base")
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
-    parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, or profiler", default="profiler")
+    parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, or profiler", default="qnn-net-run")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
-    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="fp16")
+    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
     parser.add_argument("--batch", help="change batch size", type=int, default=2)
-    parser.add_argument("--runtime", help="# seconds to run", type=int, default=10)
+    parser.add_argument("--runtime", help="# seconds to run", type=int, default=30)
     parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v79')
     parser.add_argument("--pm", help="power mode", default="burst")
     args = parser.parse_args()
