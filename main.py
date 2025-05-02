@@ -235,6 +235,26 @@ def run(args):
                     # 第二步：从设备拉取生成的 profiling 文件
                     command2 = f"adb pull {qnn_test_dir}/{model_name}_profiling.txt {model_dir}/."
                     sys_call(command2)
+                
+                elif args.app == "sim":
+                    print("qnn-net-run simulator...")
+                    command = (
+                        f"qnn-net-run --model ./x86_64-linux-clang/{model_lib_fname} --backend $QNN_SDK_ROOT/lib/x86_64-linux-clang/libQnnHtp.so "
+                        f"--input_list {model_name}_pc_input_list.txt "
+                        f"--use_native_input_files --output_dir ./sim_dump "
+                        f"--log_level error --config_file htp_extension.json --profiling_level basic "
+                        f"--perf_profile {args.pm} --shared_buffer --duration {args.runtime} --keep_num_outputs=2"
+                    )
+                    import pdb; pdb.set_trace()
+                    # [ ERROR ] Unable to load backend. dlerror(): libcdsprpc.so: cannot open shared object file: No such file or directory
+                    sys_call(command)
+                    print("parsing result...")
+                    command1 = (
+                        f"qnn-profile-viewer --input_log sim_dump/qnn-profiling-data.log > qnn_profiling.txt"
+                    )
+                    print("qnn-profile-viewer cmd is: ", command1)
+                    sys_call(command1)
+                    print("qnn-net-run simulator done")
                 elif args.app == "dInfer":
                     print("run dInfer")
                 else:
@@ -283,13 +303,13 @@ def run(args):
 
 def main():
     parser = ap.ArgumentParser()
-    parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./nafnet_block")
+    parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./vgg16")
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
-    parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, or profiler", default="qnn-net-run")
+    parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, sim, or profiler", default="qnn-net-run")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
     parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
-    parser.add_argument("--batch", help="change batch size", type=int, default=4)
+    parser.add_argument("--batch", help="change batch size", type=int, default=1)
     parser.add_argument("--runtime", help="# seconds to run", type=int, default=30)
     parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v73')
     parser.add_argument("--pm", help="power mode", default="burst")
