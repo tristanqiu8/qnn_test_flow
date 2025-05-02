@@ -4,3 +4,5 @@
 *.code-workspace
 libdInfer.so
 vgg16_fixed.onnx
+unet/unet.onnx
+unet_c32/unet_c32.onnx
