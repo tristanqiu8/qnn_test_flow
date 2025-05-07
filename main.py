@@ -38,7 +38,7 @@ def run(args):
     else:
         assert False, "arch not supported"
 
-    if args.fxp == "i8" or "i16":
+    if args.fxp == "i8" or args.fxp == "i16":
         default_conf_path = './conf/vtcm_config_i8.json'
     elif args.fxp == "fp16":
         default_conf_path = './conf/vtcm_config_fp.json'
@@ -109,8 +109,7 @@ def run(args):
                 elif args.fxp == "i16":
                     x = np.random.randint(-32768, 32767, size=input_shape).astype(np.int16)
                 elif args.fxp == "fp16":
-                    shape_arr = np.array(input_shape)
-                    x = np.random.randn(*shape_arr.shape).astype(np.float16)
+                    x = np.random.randn(input_shape[0], input_shape[1], input_shape[2],input_shape[3]).astype(np.float16)
                 input_file = f"{input_shape[0]}x{input_shape[1]}x{input_shape[2]}x{input_shape[3]}_{args.fxp}.raw"
                 raw_input_path = os.path.abspath(os.path.join(model_dir, input_file))
                 x.tofile(raw_input_path)
@@ -303,15 +302,15 @@ def run(args):
 
 def main():
     parser = ap.ArgumentParser()
-    parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./vgg16")
+    parser.add_argument("--in_dir", help='target test case dir (ONNX)', default="./nafnet_block")
     parser.add_argument("--out_dir", help='target dump directory', default="./test_dump")
     parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, sim, or profiler", default="qnn-net-run")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
-    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
+    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="fp16")
     parser.add_argument("--batch", help="change batch size", type=int, default=1)
-    parser.add_argument("--runtime", help="# seconds to run", type=int, default=30)
-    parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v73')
+    parser.add_argument("--runtime", help="# seconds to run", type=int, default=10)
+    parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v79')
     parser.add_argument("--pm", help="power mode", default="burst")
     args = parser.parse_args()
     init()
