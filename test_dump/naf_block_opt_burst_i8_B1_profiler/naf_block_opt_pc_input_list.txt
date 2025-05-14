@@ -1,0 +1,1 @@
+/home/tristan/workspace/qnn_test_flow/test_dump/naf_block_opt_burst_i8_B1_profiler/1x4x512x512_i8.raw

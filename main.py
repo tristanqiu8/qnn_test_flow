@@ -298,6 +298,7 @@ def run(args):
                                )
                     print("qnn-profile-viewer cmd is: ", command2)
                     sys_call(command2)
+                os.chdir(cur_dir)
 
 
 def main():
@@ -309,7 +310,7 @@ def main():
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
     parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="fp16")
     parser.add_argument("--batch", help="change batch size", type=int, default=1)
-    parser.add_argument("--runtime", help="# seconds to run", type=int, default=10)
+    parser.add_argument("--runtime", help="# seconds to run", type=int, default=30)
     parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v79')
     parser.add_argument("--pm", help="power mode", default="burst")
     args = parser.parse_args()
