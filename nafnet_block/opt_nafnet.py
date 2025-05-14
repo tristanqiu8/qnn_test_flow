@@ -1,7 +1,10 @@
 import onnx
 from onnxoptimizer import optimize
+from onnx import shape_inference
+import numpy as np
 
 model = onnx.load("./nafnet_block/nafnet_block_dyt.onnx")
+model = shape_inference.infer_shapes(model)
 
 for idx, node in enumerate(model.graph.node):  # four dytanh into one
     # 假设ABC连续排列且名称包含特征（如残差块标识）
@@ -44,9 +47,65 @@ for idx, node in enumerate(model.graph.node):  # fuse conv and mul
         # 这里可以添加对节点的处理逻辑
         model.graph.node.remove(node_b)
 
+for idx, node in enumerate(model.graph.node):  # fuse conv and mul
+    if node.op_type == 'Add' and len(node.input) == 2:
+        from onnx import helper, numpy_helper
+
+        # 生成新节点名称
+        concat_output = f"{node.name}_concat"
+        conv_output = node.output[0]
+
+        # 创建Concat节点 (axis=1为通道维度)
+        concat_node = helper.make_node(
+            'Concat', 
+            inputs=node.input,  # 原Add的输入A/B
+            outputs=[concat_output],
+            name=f"{node.name}_concat",
+            axis=1
+        )
+
+        # 创建Conv权重 (C=输入通道数, 2C为合并后的输入通道)
+        # Search in both graph inputs and value info for shape information
+        input_shape = None
+        for vi in list(model.graph.input) + list(model.graph.value_info):
+            if vi.name == node.input[0]:
+                input_shape = vi.type.tensor_type.shape.dim
+                break
+        if input_shape is None:
+            raise ValueError(f"Could not find shape information for {node.input[0]}")
+        C = input_shape[1].dim_value  # 假设静态通道维度
+        weights = numpy_helper.from_array(
+            np.ones((C, 2*C, 1, 1), dtype=np.float32), 
+            name=f"{node.name}_conv_weight"
+        )
+
+        # 创建Conv节点
+        conv_node = helper.make_node(
+            'Conv',
+            inputs=[concat_output, weights.name],
+            outputs=[conv_output],
+            name=f"{node.name}_conv",
+            kernel_shape=[1, 1],
+            strides=[1, 1],
+            pads=[0, 0, 0, 0],
+            group=1
+        )
+
+        # 删除原Add节点
+        model.graph.node.remove(node)
+
+        # 插入新节点到原Add位置
+
+        model.graph.node.insert(idx, concat_node)
+        model.graph.node.insert(idx+1, conv_node)
+
+        # 添加权重到initializer
+        model.graph.initializer.append(weights)
+        
+
 optimized_model = optimize(
     model,
-    passes=['fuse_consecutive_transposes']
+    passes=['fuse_consecutive_transposes', 'eliminate_deadend', 'fuse_consecutive_concats']
 )
 onnx.checker.check_model(optimized_model)
 onnx.save(optimized_model, "./nafnet_block/naf_block_opt.onnx")
