@@ -29,7 +29,7 @@ for idx, node in enumerate(model.graph.node):  # four dytanh into one
         model.graph.node.remove(node_d)
 
 for idx, node in enumerate(model.graph.node):  # fuse conv and mul
-    if node.op_type == 'Conv' and model.graph.node[idx+1].op_type == 'Mul':
+    if node.op_type == 'Conv' and model.graph.node[idx+1].op_type == 'Mul' and node.name != 'Conv_19':
         node_a = node
         node_b = model.graph.node[idx+1]
 
@@ -47,8 +47,15 @@ for idx, node in enumerate(model.graph.node):  # fuse conv and mul
         # 这里可以添加对节点的处理逻辑
         model.graph.node.remove(node_b)
 
-for idx, node in enumerate(model.graph.node):  # fuse conv and mul
-    if node.op_type == 'Add' and len(node.input) == 2:
+optimized_model = optimize(
+    model,
+    passes=['fuse_consecutive_transposes', 'eliminate_deadend', 'fuse_consecutive_concats']
+)
+onnx.checker.check_model(optimized_model)
+onnx.save(optimized_model, "./nafnet_block/naf_no_add_convert.onnx")
+
+for idx, node in enumerate(model.graph.node):  # Convert elementwise add into Concat + Conv
+    if node.op_type == 'Add':
         from onnx import helper, numpy_helper
 
         # 生成新节点名称
@@ -75,7 +82,7 @@ for idx, node in enumerate(model.graph.node):  # fuse conv and mul
             raise ValueError(f"Could not find shape information for {node.input[0]}")
         C = input_shape[1].dim_value  # 假设静态通道维度
         weights = numpy_helper.from_array(
-            np.ones((C, 2*C, 1, 1), dtype=np.float32), 
+            np.ones((C, 2, 1, 1), dtype=np.float32), 
             name=f"{node.name}_conv_weight"
         )
 
@@ -88,7 +95,7 @@ for idx, node in enumerate(model.graph.node):  # fuse conv and mul
             kernel_shape=[1, 1],
             strides=[1, 1],
             pads=[0, 0, 0, 0],
-            group=1
+            group=C
         )
 
         # 删除原Add节点
@@ -102,6 +109,24 @@ for idx, node in enumerate(model.graph.node):  # fuse conv and mul
         # 添加权重到initializer
         model.graph.initializer.append(weights)
         
+# for idx, node in enumerate(model.graph.node):  # fuse two conv into one
+#     if node.name == 'Conv_19' and model.graph.node[idx+1].name == 'Conv_21':
+#         node_a = node
+#         node_b = model.graph.node[idx+1]
+
+#         # detete node_b
+#         # 将B的输出指向原D的后续节点
+#         if idx + 2 < len(model.graph.node):
+#             next_node = model.graph.node[idx+2]
+#             for i, input_name in enumerate(next_node.input):
+#                 if input_name == node_b.output[0]:
+#                     index = i
+#                     break
+#             next_node.input[index] = node_a.output[0]
+#         else:
+#             print(f"Warning: Node at index {idx+2} does not exist. Skipping connection.")
+#         # 这里可以添加对节点的处理逻辑
+#         model.graph.node.remove(node_b)
 
 optimized_model = optimize(
     model,

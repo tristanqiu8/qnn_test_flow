@@ -59,7 +59,7 @@ def run(args):
                 import onnx_tool
                 model_name = filename.split(".")[0]
                 model_path = os.path.abspath(os.path.join(root, filename))
-                model_dir = os.path.abspath(os.path.join(args.out_dir, f"{model_name}_{args.pm}_{args.fxp}_B{args.batch}_{args.app}"))
+                model_dir = os.path.abspath(os.path.join(args.out_dir, f"{model_name}_{args.pm}_{args.fxp}_B{args.batch}_{args.arch}_{args.app}"))
                 encoding_name = model_name + ".encodings"
                 encoding_path = os.path.abspath(os.path.join(root, encoding_name))
                 if not os.path.exists(model_dir):
@@ -308,7 +308,7 @@ def main():
     parser.add_argument("--app", help="app selection: qnn-net-run, dInfer, sim, or profiler", default="qnn-net-run")
     parser.add_argument("--format", help="build format: .so or seriealized .bin", default="bin")
     parser.add_argument("--sram", help="sram size, unit MB, up to 8", type=int, default=0)
-    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="fp16")
+    parser.add_argument("--fxp", help="fxp type: i8, i16, or fp16", default="i8")
     parser.add_argument("--batch", help="change batch size", type=int, default=1)
     parser.add_argument("--runtime", help="# seconds to run", type=int, default=30)
     parser.add_argument("--arch", help="htp arch: v73-8Gen2, v75-8Gen3, v79-8Gen4", default='v79')
