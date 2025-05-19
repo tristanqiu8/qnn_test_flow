@@ -19,7 +19,7 @@ def sys_call(cmd):
                         capture_output=True,  # 捕获标准输出和标准错误
                         shell=True,           # 使用 shell 执行命令
                         check=True,           # 如果命令返回非零退出码，则抛出异常
-                        timeout=200, 
+                        # timeout=200, 
                         text=True             # 将输出作为字符串返回
                     )
     if result.stdout:
@@ -211,7 +211,7 @@ def run(args):
                         f"export ADSP_LIBRARY_PATH=./ && "
                         f"rm -rf {model_name}_dump && "
                         f"./qnn-net-run --retrieve_context {binary_fname}.bin --backend libQnnHtp.so --input_list {model_name}_input_list.txt "
-                        f"--use_native_input_files --output_dir {model_name}_dump "
+                        f"--use_native_input_files --use_native_output_files --output_dir {model_name}_dump "
                         f"--log_level error --config_file htp_extension.json --profiling_level basic "
                         f"--perf_profile {args.pm} --shared_buffer --duration {args.runtime} --keep_num_outputs=2"
                         "'"
@@ -279,7 +279,7 @@ def run(args):
                         f"export ADSP_LIBRARY_PATH=./ && "
                         f"rm -rf {model_name}_dump && "
                         f"./qnn-net-run --retrieve_context {binary_fname}.bin --backend libQnnHtp.so --input_list {model_name}_input_list.txt "
-                        f"--use_native_input_files --output_dir {model_name}_dump --log_level info "
+                        f"--use_native_input_files --use_native_output_files --output_dir {model_name}_dump --log_level info "
                         f"--config_file htp_extension.json --profiling_level detailed --profiling_option optrace "
                         f"--perf_profile {args.pm} --shared_buffer --duration {args.runtime} --keep_num_outputs=2"
                         "'"

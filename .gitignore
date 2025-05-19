@@ -9,3 +9,4 @@ unet_c32/unet_c32.onnx
 qnn-profiling-data_0.log
 nafnet_opt.onnx
 nafnet_dyt_116.onnx
+vit/vit_w8a8.so

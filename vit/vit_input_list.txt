@@ -1,0 +1,1 @@
+/data/local/tmp/qnn_test_234/1x224x224x3_i8.raw

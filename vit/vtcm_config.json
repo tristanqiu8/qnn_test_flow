@@ -1,0 +1,23 @@
+{
+    "graphs": [
+        {
+            "graph_names": [
+                "vit-vit-qualcomm_snapdragon_8gen2-w8a8"
+            ],
+            "vtcm_mb": 8,
+            "O": 3,
+            "dlbc": 1
+        }
+    ],
+    "devices": [
+        {
+            "soc_id": 43,
+            "dsp_arch": "v73",
+            "cores": [
+                {
+                    "perf_profile": "burst"
+                }
+            ]
+        }
+    ]
+}
